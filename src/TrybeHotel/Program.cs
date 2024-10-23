@@ -11,7 +11,6 @@ using TrybeHotel.Utils;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddDbContext<TrybeHotelContext>();
 builder.Services.AddScoped<ITrybeHotelContext, TrybeHotelContext>();
@@ -30,15 +29,16 @@ builder.Services.AddControllersWithViews()
                 .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddHttpClient();
 
-var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      policy  =>
-                      {
-                          policy.WithOrigins("https://nominatim.openstreetmap.org",
-                                              "https://openstreetmap.org");
-                      });
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options => {
+    options.AddPolicy(
+        name: MyAllowSpecificOrigins,
+        policy => {
+            policy.WithOrigins(
+                "https://nominatim.openstreetmap.org",
+                "https://openstreetmap.org"
+            );
+        });
 });
 
 
@@ -48,17 +48,14 @@ builder.Services.Configure<TokenOptions>(
 
 var tokenOptions = builder.Configuration.GetSection(TokenOptions.Token);
 
-builder.Services.AddAuthentication(options =>
-{
+builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options =>
-{
+.AddJwtBearer(options => {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters()
-    {
+    options.TokenValidationParameters = new TokenValidationParameters() {
         ValidateIssuer = false,
         ValidateAudience = false,
         ValidateIssuerSigningKey = true,
@@ -66,8 +63,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization(options =>
-{
+builder.Services.AddAuthorization(options => {
     options.AddPolicy("Client", policy => policy.RequireClaim(ClaimTypes.Email));
     options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Email).RequireClaim(ClaimTypes.Role, "admin"));
 });
@@ -75,8 +71,7 @@ builder.Services.AddAuthorization(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+if (app.Environment.IsDevelopment()) {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -92,7 +87,6 @@ app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseAuthentication();
 
 app.UseAuthorization();
-
 
 app.MapControllers();
 
