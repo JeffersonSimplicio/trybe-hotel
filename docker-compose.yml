@@ -1,0 +1,27 @@
+version: '3'
+services:
+  db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: trybe_hotel_db
+    ports:
+      - 1433:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=TrybeHotel12!
+      - MSSQL_PID=Developer
+    networks:
+      - trybehotel_network
+
+  web:
+    build: .\src\TrybeHotel\
+    container_name: trybe_hotel_web
+    ports:
+      - 8080:80  # Exponha a porta 80 do container na porta 8080
+    depends_on:
+      - db
+    networks:
+      - trybehotel_network
+
+networks:
+  trybehotel_network:
+    driver: bridge
