@@ -5,14 +5,14 @@ O **Trybe Hotel** é uma API Web desenvolvida em ASP.NET para gerenciamento de h
 ## Funcionalidades
 - **Gerenciamento de Clientes**: Cadastro e consulta de clientes.
 - **Gerenciamento de Reservas**: Criar, visualizar reservas.
-- **Gerenciamento de Quartos**: Lista quartos e suas inforamações, cria e deleta.
-- **Distancia até os Hoteis**: Usa o endereço do usuaio para calcular a distancia até os hoteis.
+- **Gerenciamento de Quartos**: Lista quartos e suas informações, cria e deleta.
+- **Distancia até os Hotéis**: Usa o endereço do usuário para calcular a distancia até os hotéis.
 
 ## Tecnologias Utilizadas
 - **ASP.NET Core**: Framework para desenvolvimento da API.
 - **Entity Framework Core**: ORM utilizado para mapear o banco de dados e realizar operações CRUD.
 - **SQL Server**: Banco de dados relacional utilizado pela aplicação.
-- **Docker**: Contêinerização da aplicação para facilitar o deploy e ambiente de desenvolvimento.
+- **Docker**: Conteinerização da aplicação para facilitar o deploy e ambiente de desenvolvimento.
 - **Migrations**: Utilizado para versionamento e controle de mudanças no banco de dados.
 
 ## Estrutura do Projeto
@@ -30,4 +30,4 @@ O projeto é organizado da seguinte forma:
 - [.NET 6.0](https://dotnet.microsoft.com/download/dotnet/6.0)
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 - [Docker](https://www.docker.com/get-started)
-- ✨ **Dica:** Antes de instalar SDK do .NET e o SQL Server, vejá o docker-compose e o Dockerfile
+- ✨ **Dica:** Antes de instalar SDK do .NET e o SQL Server, veja o docker-compose e o Dockerfile
