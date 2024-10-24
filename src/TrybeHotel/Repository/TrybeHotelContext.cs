@@ -13,7 +13,7 @@ public class TrybeHotelContext : DbContext, ITrybeHotelContext {
     #endregion
 
     public TrybeHotelContext(DbContextOptions<TrybeHotelContext> options) : base(options) {
-        Seeder.SeedUserAdmin(this);
+        Seeder.SeedUsers(this);
     }
     public TrybeHotelContext() { }
 
