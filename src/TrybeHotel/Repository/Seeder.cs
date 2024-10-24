@@ -1,20 +1,33 @@
 using TrybeHotel.Models;
 using TrybeHotel.Dto;
 
-namespace TrybeHotel.Repository
-{
-    public class Seeder
-    {
-        public static void SeedUserAdmin(ITrybeHotelContext _context) {
-            try {
-            var usersCount = _context.Users.Where(u => u.UserType == "admin").Count();
+namespace TrybeHotel.Repository;
+
+public static class Seeder {
+    public static void SeedUsers(ITrybeHotelContext _context) {
+        try {
+            int usersCount = _context.Users.Count();
             if (usersCount == 0) {
-                _context.Users.Add(new User{ Name = "admin", Email = "admin@admin.com", Password = "admin", UserType = "admin" });
+                var users = new List<User>() {
+                    new User {
+                        Name = "admin",
+                        Email = "admin@admin.com",
+                        Password = "admin",
+                        UserType = "admin"
+                    },
+                    new User {
+                        Name = "client",
+                        Email = "client@client.com",
+                        Password = "client",
+                        UserType = "client"
+                    }
+                };
+                _context.Users.AddRange(users);
                 _context.SaveChanges();
             }
-            } catch (Exception ex) {
-                System.Console.Write(ex.ToString());
-            }
+        }
+        catch (Exception ex) {
+            Console.WriteLine(ex.ToString());
         }
     }
-}
+} 
