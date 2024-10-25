@@ -30,7 +30,7 @@ public class UserController : Controller {
         try {
             return Created("", _repository.Add(user));
         }
-        catch (Exception ex) {
+        catch (EmailAlreadyExistsException ex) {
             return Conflict(new { message = ex.Message });
         }
     }
