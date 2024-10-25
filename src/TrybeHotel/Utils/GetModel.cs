@@ -21,14 +21,12 @@ public class GetModel : IGetModel {
 
     public User User(int userId) {
         User? user = UserOrDefault(userId);
-        if (user == null) throw new UserNotFoundException();
-        return user;
+        return user ?? throw new UserNotFoundException();
     }
 
     public User User(string userEmail) {
         User? user = UserOrDefault(userEmail);
-        if (user == null) throw new UserNotFoundException();
-        return user;
+        return user ?? throw new UserNotFoundException();
     }
 
     public City? CityOrDefault(int cityId) {
@@ -37,7 +35,7 @@ public class GetModel : IGetModel {
 
     public City City(int cityId) {
         City? city = CityOrDefault(cityId);
-        return city == null ? throw new CityNotFoundException() : city;
+        return city ?? throw new CityNotFoundException();
     }
 
     public Room? RoomOrDefault(int roomId) {
@@ -46,7 +44,6 @@ public class GetModel : IGetModel {
 
     public Room Room(int roomId) {
         Room? room = RoomOrDefault(roomId);
-        if (room == null) throw new RoomNotFoundException();
-        return room;
+        return room ?? throw new RoomNotFoundException();
     }
 }
