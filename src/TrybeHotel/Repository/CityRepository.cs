@@ -11,8 +11,12 @@ public class CityRepository : ICityRepository {
         _context = context;
     }
 
+    private City? GetById(int id) {
+        return _context.Cities.FirstOrDefault(c => c.CityId == id);
+    }
+
     public CityDto GetCity(int id) {
-        City? city = _context.Cities.FirstOrDefault(c => c.CityId == id);
+        City? city = GetById(id);
         return city == null
             ? throw new CityNotFoundException()
             : SimpleMapper.Map<City, CityDto>(city);
@@ -37,13 +41,14 @@ public class CityRepository : ICityRepository {
     }
 
     public CityDto UpdateCity(City city) {
+        if (GetById(city.CityId) == null) throw new CityNotFoundException();
         _context.Cities.Update(city);
         _context.SaveChanges();
         return SimpleMapper.Map<City, CityDto>(city);
     }
 
     public void DeleteCity(int id) {
-        City? city = _context.Cities.FirstOrDefault(c => c.CityId == id);
+        City? city = GetById(id);
         if (city == null) throw new CityNotFoundException();
         _context.Cities.Remove(city);
         _context.SaveChanges();

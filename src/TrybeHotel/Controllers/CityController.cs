@@ -36,7 +36,8 @@ public class CityController : Controller {
 
     [HttpPut]
     public IActionResult PutCity([FromBody] City city) {
-        return Ok(_repository.UpdateCity(city));
+        try { return Ok(_repository.UpdateCity(city)); }
+        catch (CityNotFoundException) { return NotFound(); }
     }
 
     [HttpDelete("{CityId}")]
