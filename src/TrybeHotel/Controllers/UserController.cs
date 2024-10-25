@@ -4,6 +4,9 @@ using TrybeHotel.Repository;
 using TrybeHotel.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using TrybeHotel.Exceptions;
+using System.Security.Claims;
+using TrybeHotel.Services;
 
 namespace TrybeHotel.Controllers;
 
@@ -30,5 +33,17 @@ public class UserController : Controller {
         catch (Exception ex) {
             return Conflict(new { message = ex.Message });
         }
+    }
+
+    [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public IActionResult Update([FromBody] UserDtoUpdate userUpdate) {
+        try {
+            var token = HttpContext.User.Identity as ClaimsIdentity;
+            string userType = token!.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)!.Value;
+            UserDto user = _repository.Update(userUpdate, userType);
+            return Ok(new { token = new TokenGenerator().Generate(user) });
+        }
+        catch (UserNotFoundException ex) { return NotFound(ex.Message); }
     }
 }

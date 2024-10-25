@@ -1,6 +1,6 @@
 ﻿namespace TrybeHotel.Exceptions;
 
-public class EmailAlreadyExistsException : Exception {
+public class EmailAlreadyExistsException : EntityAlreadyExistsException {
     public EmailAlreadyExistsException()
         : base("User email already exists") { }
     public EmailAlreadyExistsException(string email)
