@@ -21,8 +21,8 @@ public class UserController : Controller {
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public IActionResult GetUsers() {
-        return Ok(_repository.GetUsers());
+    public IActionResult GetAll() {
+        return Ok(_repository.GetAll());
     }
 
     [HttpPost]

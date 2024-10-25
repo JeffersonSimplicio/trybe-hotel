@@ -27,7 +27,7 @@ public class UserRepository : IUserRepository {
 
     public UserDto Add(UserDtoInsert user) {
         try {
-            GetUser(user.Email);
+            Get(user.Email);
             //Exception thrown if the email is already registered.
             throw new EmailAlreadyExistsException(user.Email);
         }
@@ -44,17 +44,17 @@ public class UserRepository : IUserRepository {
         }
     }
 
-    public UserDto GetUser(int userId) {
+    public UserDto Get(int userId) {
         User user = _getModel.User(userId);
         return SimpleMapper.Map<User, UserDto>(user);
     }
 
-    public UserDto GetUser(string userEmail) {
+    public UserDto Get(string userEmail) {
         User user = _getModel.User(userEmail);
         return SimpleMapper.Map<User, UserDto>(user);
     }
 
-    public IEnumerable<UserDto> GetUsers() {
+    public IEnumerable<UserDto> GetAll() {
         return _context.Users.Select(u => SimpleMapper.Map<User, UserDto>(u));
     }
 
