@@ -24,7 +24,7 @@ public class CityController : Controller {
         return Ok(_repository.GetCities());
     }
 
-    [HttpGet("{nameFragment}")]
+    [HttpGet("search/{nameFragment}")]
     public IActionResult GetCities(string nameFragment) {
         return Ok(_repository.GetCities(nameFragment));
     }
