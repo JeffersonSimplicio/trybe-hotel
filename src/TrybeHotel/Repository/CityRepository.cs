@@ -10,23 +10,35 @@ public class CityRepository : ICityRepository {
         _context = context;
     }
 
-    // 4. Refatore o endpoint GET /city
+    public CityDto GetCity(int id) {
+        City? city = _context.Cities.FirstOrDefault(c => c.CityId == id);
+        return city == null
+            ? throw new CityNotFoundException()
+            : SimpleMapper.Map<City, CityDto>(city);
+    }
+
     public IEnumerable<CityDto> GetCities() {
         var cities = _context.Cities.Select(c => SimpleMapper.Map<City, CityDto>(c));
         return cities;
     }
 
-    // 2. Refatore o endpoint POST /city
+    public IEnumerable<CityDto> GetCities(string name) {
+        throw new NotImplementedException();
+    }
+
     public CityDto AddCity(City city) {
         _context.Cities.Add(city);
         _context.SaveChanges();
         return SimpleMapper.Map<City, CityDto>(city);
     }
 
-    // 3. Desenvolva o endpoint PUT /city
     public CityDto UpdateCity(City city) {
         _context.Cities.Update(city);
         _context.SaveChanges();
         return SimpleMapper.Map<City, CityDto>(city);
+    }
+
+    public void DeleteCity(int id) {
+        throw new NotImplementedException();
     }
 }
