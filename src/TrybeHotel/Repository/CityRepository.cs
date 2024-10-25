@@ -35,6 +35,10 @@ public class CityRepository : ICityRepository {
     }
 
     public CityDto AddCity(City city) {
+        var existingCity = _context
+            .Cities
+            .FirstOrDefault(c => c.Name == city.Name && c.State == city.State);
+        if (existingCity != null) throw new CityAlreadyExistsException(city);
         _context.Cities.Add(city);
         _context.SaveChanges();
         return SimpleMapper.Map<City, CityDto>(city);

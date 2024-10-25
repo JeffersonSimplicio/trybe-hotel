@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TrybeHotel.Dto;
 using TrybeHotel.Exceptions;
 using TrybeHotel.Models;
 using TrybeHotel.Repository;
@@ -31,7 +32,11 @@ public class CityController : Controller {
 
     [HttpPost]
     public IActionResult PostCity([FromBody] City city) {
-        return Created("", _repository.AddCity(city));
+        try {
+            CityDto newCity = _repository.AddCity(city);
+            return CreatedAtAction(nameof(GetCity), new { id = newCity.cityId }, newCity);
+        }
+        catch (CityAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
     }
 
     [HttpPut]
