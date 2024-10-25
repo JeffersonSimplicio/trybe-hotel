@@ -31,6 +31,15 @@ public class GetModel : IGetModel {
         return user;
     }
 
+    public City? CityOrDefault(int cityId) {
+        return _context.Cities.FirstOrDefault(c => c.CityId == cityId);
+    }
+
+    public City City(int cityId) {
+        City? city = CityOrDefault(cityId);
+        return city == null ? throw new CityNotFoundException() : city;
+    }
+
     public Room? RoomOrDefault(int roomId) {
         return _context.Rooms.FirstOrDefault(r => r.RoomId == roomId);
     }
