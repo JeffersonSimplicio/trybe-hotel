@@ -2,6 +2,7 @@ using TrybeHotel.Models;
 using TrybeHotel.Dto;
 using TrybeHotel.Exceptions;
 using TrybeHotel.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace TrybeHotel.Repository;
 public class CityRepository : ICityRepository {
@@ -42,6 +43,9 @@ public class CityRepository : ICityRepository {
     }
 
     public void DeleteCity(int id) {
-        throw new NotImplementedException();
+        City? city = _context.Cities.FirstOrDefault(c => c.CityId == id);
+        if (city == null) throw new CityNotFoundException();
+        _context.Cities.Remove(city);
+        _context.SaveChanges();
     }
 }

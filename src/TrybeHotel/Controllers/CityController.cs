@@ -34,9 +34,17 @@ public class CityController : Controller {
         return Created("", _repository.AddCity(city));
     }
 
-    // 3. Desenvolva o endpoint PUT /city
     [HttpPut]
     public IActionResult PutCity([FromBody] City city) {
         return Ok(_repository.UpdateCity(city));
+    }
+
+    [HttpDelete("{CityId}")]
+    public IActionResult DeleteCity(int CityId) {
+        try {
+            _repository.DeleteCity(CityId);
+            return NoContent();
+        }
+        catch (CityNotFoundException) { return NotFound(); }
     }
 }
