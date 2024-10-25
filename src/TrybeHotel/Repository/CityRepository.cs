@@ -23,7 +23,10 @@ public class CityRepository : ICityRepository {
     }
 
     public IEnumerable<CityDto> GetCities(string name) {
-        throw new NotImplementedException();
+        var cities = _context.Cities
+            .Where(c => c.Name.Contains(name))
+            .Select(c => SimpleMapper.Map<City, CityDto>(c));
+        return cities;
     }
 
     public CityDto AddCity(City city) {

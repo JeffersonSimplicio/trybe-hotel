@@ -17,12 +17,16 @@ public class CityController : Controller {
     public IActionResult GetCity(int CityId) {
         try { return Ok(_repository.GetCity(CityId)); }
         catch (CityNotFoundException) { return NotFound(); }
-        catch (Exception) { return StatusCode(500); }
     }
 
     [HttpGet]
     public IActionResult GetCities() {
         return Ok(_repository.GetCities());
+    }
+
+    [HttpGet("{nameFragment}")]
+    public IActionResult GetCities(string nameFragment) {
+        return Ok(_repository.GetCities(nameFragment));
     }
 
     [HttpPost]
