@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrybeHotel.Dto;
 using TrybeHotel.Exceptions;
@@ -31,6 +33,8 @@ public class CityController : Controller {
     }
 
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Admin")]
     public IActionResult PostCity([FromBody] City city) {
         try {
             CityDto newCity = _repository.AddCity(city);
@@ -40,12 +44,16 @@ public class CityController : Controller {
     }
 
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Admin")]
     public IActionResult PutCity([FromBody] City city) {
         try { return Ok(_repository.UpdateCity(city)); }
         catch (CityNotFoundException) { return NotFound(); }
     }
 
     [HttpDelete("{CityId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Admin")]
     public IActionResult DeleteCity(int CityId) {
         try {
             _repository.DeleteCity(CityId);
