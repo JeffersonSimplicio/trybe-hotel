@@ -7,19 +7,16 @@ using Microsoft.EntityFrameworkCore;
 namespace TrybeHotel.Repository;
 public class CityRepository : ICityRepository {
     protected readonly ITrybeHotelContext _context;
-    public CityRepository(ITrybeHotelContext context) {
-        _context = context;
-    }
+    protected readonly IGetModel _getModel;
 
-    private City? GetById(int id) {
-        return _context.Cities.FirstOrDefault(c => c.CityId == id);
+    public CityRepository(ITrybeHotelContext context, IGetModel getModel) {
+        _context = context;
+        _getModel = getModel;
     }
 
     public CityDto GetCity(int id) {
-        City? city = GetById(id);
-        return city == null
-            ? throw new CityNotFoundException()
-            : SimpleMapper.Map<City, CityDto>(city);
+        City city = _getModel.City(id);
+        return SimpleMapper.Map<City, CityDto>(city);
     }
 
     public IEnumerable<CityDto> GetCities() {
@@ -45,15 +42,17 @@ public class CityRepository : ICityRepository {
     }
 
     public CityDto UpdateCity(City city) {
-        if (GetById(city.CityId) == null) throw new CityNotFoundException();
-        _context.Cities.Update(city);
+        var existingCity = _getModel.City(city.CityId);
+
+        existingCity.Name = city.Name;
+        existingCity.State = city.State;
+
         _context.SaveChanges();
         return SimpleMapper.Map<City, CityDto>(city);
     }
 
     public void DeleteCity(int id) {
-        City? city = GetById(id);
-        if (city == null) throw new CityNotFoundException();
+        City city = _getModel.City(id);
         _context.Cities.Remove(city);
         _context.SaveChanges();
     }
