@@ -14,24 +14,24 @@ public class CityRepository : ICityRepository {
         _getModel = getModel;
     }
 
-    public CityDto GetCity(int id) {
+    public CityDto GetById(int id) {
         City city = _getModel.City(id);
         return SimpleMapper.Map<City, CityDto>(city);
     }
 
-    public IEnumerable<CityDto> GetCities() {
+    public IEnumerable<CityDto> GetAll() {
         var cities = _context.Cities.Select(c => SimpleMapper.Map<City, CityDto>(c));
         return cities;
     }
 
-    public IEnumerable<CityDto> GetCities(string name) {
+    public IEnumerable<CityDto> FindByName(string name) {
         var cities = _context.Cities
             .Where(c => c.Name.Contains(name))
             .Select(c => SimpleMapper.Map<City, CityDto>(c));
         return cities;
     }
 
-    public CityDto AddCity(CityDtoInsert city) {
+    public CityDto Add(CityDtoInsert city) {
         var existingCity = _context
             .Cities
             .FirstOrDefault(c =>
@@ -47,7 +47,7 @@ public class CityRepository : ICityRepository {
         return SimpleMapper.Map<City, CityDto>(cityEntity);
     }
 
-    public CityDto UpdateCity(CityDto city) {
+    public CityDto Update(CityDto city) {
         City existingCity = _getModel.City(city.cityId);
 
         existingCity.Name = city.name;
@@ -57,7 +57,7 @@ public class CityRepository : ICityRepository {
         return SimpleMapper.Map<City, CityDto>(existingCity);
     }
 
-    public void DeleteCity(int id) {
+    public void Delete(int id) {
         City city = _getModel.City(id);
         _context.Cities.Remove(city);
         _context.SaveChanges();
