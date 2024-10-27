@@ -31,24 +31,30 @@ public class CityRepository : ICityRepository {
         return cities;
     }
 
-    public CityDto AddCity(City city) {
+    public CityDto AddCity(CityDtoInsert city) {
         var existingCity = _context
             .Cities
-            .FirstOrDefault(c => c.Name == city.Name && c.State == city.State);
-        if (existingCity != null) throw new CityAlreadyExistsException(city);
-        _context.Cities.Add(city);
+            .FirstOrDefault(c =>
+                c.Name.ToLower() == city.name.ToLower() &&
+                c.State.ToLower() == city.state.ToLower()
+            );
+        if (existingCity != null) throw new CityAlreadyExistsException(city.name, city.state);
+
+        City cityEntity = SimpleMapper.Map<CityDtoInsert, City>(city);
+
+        _context.Cities.Add(cityEntity);
         _context.SaveChanges();
-        return SimpleMapper.Map<City, CityDto>(city);
+        return SimpleMapper.Map<City, CityDto>(cityEntity);
     }
 
-    public CityDto UpdateCity(City city) {
-        var existingCity = _getModel.City(city.CityId);
+    public CityDto UpdateCity(CityDto city) {
+        City existingCity = _getModel.City(city.cityId);
 
-        existingCity.Name = city.Name;
-        existingCity.State = city.State;
+        existingCity.Name = city.name;
+        existingCity.State = city.state;
 
         _context.SaveChanges();
-        return SimpleMapper.Map<City, CityDto>(city);
+        return SimpleMapper.Map<City, CityDto>(existingCity);
     }
 
     public void DeleteCity(int id) {

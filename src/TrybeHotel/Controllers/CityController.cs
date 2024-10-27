@@ -19,7 +19,7 @@ public class CityController : Controller {
     [HttpGet("{CityId}")]
     public IActionResult GetCity(int CityId) {
         try { return Ok(_repository.GetCity(CityId)); }
-        catch (CityNotFoundException) { return NotFound(); }
+        catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
     [HttpGet]
@@ -35,10 +35,10 @@ public class CityController : Controller {
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public IActionResult PostCity([FromBody] City city) {
+    public IActionResult PostCity([FromBody] CityDtoInsert city) {
         try {
             CityDto newCity = _repository.AddCity(city);
-            return CreatedAtAction(nameof(GetCity), new { id = newCity.cityId }, newCity);
+            return CreatedAtAction(nameof(GetCity), new { CityId = newCity.cityId }, newCity);
         }
         catch (CityAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
     }
@@ -46,9 +46,9 @@ public class CityController : Controller {
     [HttpPut]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public IActionResult PutCity([FromBody] City city) {
+    public IActionResult PutCity([FromBody] CityDto city) {
         try { return Ok(_repository.UpdateCity(city)); }
-        catch (CityNotFoundException) { return NotFound(); }
+        catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
     [HttpDelete("{CityId}")]
@@ -59,6 +59,6 @@ public class CityController : Controller {
             _repository.DeleteCity(CityId);
             return NoContent();
         }
-        catch (CityNotFoundException) { return NotFound(); }
+        catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 }
