@@ -21,12 +21,12 @@ public class UserController : Controller {
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public IActionResult GetAllUsers() {
+    public ActionResult<IEnumerable<UserDto>> GetAllUsers() {
         return Ok(_repository.GetAllUsers());
     }
 
     [HttpPost]
-    public IActionResult AddUser([FromBody] UserDtoInsert user) {
+    public ActionResult<UserDto> AddUser([FromBody] UserDtoInsert user) {
         try {
             return Created("", _repository.AddUser(user));
         }
@@ -37,12 +37,12 @@ public class UserController : Controller {
 
     [HttpPut]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public IActionResult UpdateUser([FromBody] UserDtoUpdate userUpdate) {
+    public ActionResult<UserDto> UpdateUser([FromBody] UserDtoUpdate userUpdate) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
             string userType = token!.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)!.Value;
             UserDto user = _repository.UpdateUser(userUpdate, userType);
-            return Ok(new { token = new TokenGenerator().Generate(user) });
+            return Ok(user);
         }
         catch (UserNotFoundException ex) { return NotFound(ex.Message); }
     }
