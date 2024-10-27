@@ -77,4 +77,10 @@ public class UserRepository : IUserRepository {
         _context.Users.Remove(user);
         _context.SaveChanges();
     }
+
+    public void AdminDeleteUser(int userId) {
+        User user = _getModel.User(userId);
+        _context.Users.Remove(user);
+        _context.SaveChanges();
+    }
 }

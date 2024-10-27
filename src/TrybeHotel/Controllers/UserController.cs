@@ -60,4 +60,15 @@ public class UserController : Controller {
         }
         catch (UserNotFoundException ex) { return NotFound(ex.Message); }
     }
+
+    [HttpDelete("{UserId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Admin")]
+    public ActionResult AdminDeleteUser(int UserId) {
+        try {
+            _repository.AdminDeleteUser(UserId);
+            return NoContent();
+        }
+        catch (UserNotFoundException ex) { return NotFound(ex.Message); }
+    }
 }
