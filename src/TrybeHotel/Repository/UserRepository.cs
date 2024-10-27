@@ -9,10 +9,7 @@ public class UserRepository : IUserRepository {
     protected readonly ITrybeHotelContext _context;
     protected readonly IGetModel _getModel;
 
-    public UserRepository(
-        ITrybeHotelContext context,
-        IGetModel getModel
-    ) {
+    public UserRepository(ITrybeHotelContext context, IGetModel getModel) {
         _context = context;
         _getModel = getModel;
     }
@@ -52,6 +49,12 @@ public class UserRepository : IUserRepository {
     public UserDto GetUserByEmail(string userEmail) {
         User user = _getModel.User(userEmail);
         return SimpleMapper.Map<User, UserDto>(user);
+    }
+
+    public IEnumerable<UserDto> GetUsersByName(string userName) {
+        return _context.Users
+            .Where(u => u.Name.Contains(userName))
+            .Select(u => SimpleMapper.Map<User, UserDto>(u));
     }
 
     public IEnumerable<UserDto> GetAllUsers() {

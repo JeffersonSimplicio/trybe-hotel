@@ -25,6 +25,14 @@ public class UserController : Controller {
         return Ok(_repository.GetAllUsers());
     }
 
+
+    [HttpGet]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Admin")]
+    public ActionResult<IEnumerable<UserDto>> GetUsersByName([FromBody] string userName) {
+        return Ok(_repository.GetUsersByName(userName));
+    }
+
     [HttpPost]
     public ActionResult<UserDto> AddUser([FromBody] UserDtoInsert user) {
         try {

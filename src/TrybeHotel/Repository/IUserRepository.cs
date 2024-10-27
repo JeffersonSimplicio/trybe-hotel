@@ -8,6 +8,7 @@ public interface IUserRepository {
     UserDto Login(LoginDto login);
     UserDto GetUserById(int userId);
     UserDto GetUserByEmail(string userEmail);
+    IEnumerable<UserDto> GetUsersByName(string userName);
     IEnumerable<UserDto> GetAllUsers();
     UserDto UpdateUser(UserDtoUpdate userUpdate, string userType);
     void DeleteOwnAccount(string userEmail);
