@@ -10,5 +10,5 @@ public interface IUserRepository {
     UserDto GetUserByEmail(string userEmail);
     IEnumerable<UserDto> GetAllUsers();
     UserDto UpdateUser(UserDtoUpdate userUpdate, string userType);
-    void DeleteUser(int userId);
+    void DeleteOwnAccount(string userEmail);
 }

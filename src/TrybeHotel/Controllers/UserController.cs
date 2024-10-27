@@ -46,4 +46,18 @@ public class UserController : Controller {
         }
         catch (UserNotFoundException ex) { return NotFound(ex.Message); }
     }
+
+    [HttpDelete]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public ActionResult DeleteOwnAccount() {
+        try {
+            var token = HttpContext.User.Identity as ClaimsIdentity;
+            string userEmail = token!.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value;
+
+            _repository.DeleteOwnAccount(userEmail);
+            return NoContent();
+        }
+        catch (UserNotFoundException ex) { return NotFound(ex.Message); }
+    }
 }

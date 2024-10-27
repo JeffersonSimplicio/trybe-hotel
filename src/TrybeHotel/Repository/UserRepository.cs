@@ -27,7 +27,7 @@ public class UserRepository : IUserRepository {
 
     public UserDto AddUser(UserDtoInsert user) {
         try {
-            Get(user.Email);
+            GetUserByEmail(user.Email);
             //Exception thrown if the email is already registered.
             throw new EmailAlreadyExistsException(user.Email);
         }
@@ -72,7 +72,9 @@ public class UserRepository : IUserRepository {
         return SimpleMapper.Map<User, UserDto>(user);
     }
 
-    public void DeleteUser(int userId) {
-        throw new NotImplementedException();
+    public void DeleteOwnAccount(string userEmail) {
+        User user = _getModel.User(userEmail);
+        _context.Users.Remove(user);
+        _context.SaveChanges();
     }
 }
