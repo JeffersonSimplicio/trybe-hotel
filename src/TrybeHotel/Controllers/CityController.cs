@@ -17,27 +17,27 @@ public class CityController : Controller {
     }
 
     [HttpGet("{CityId}")]
-    public ActionResult<CityDto> GetById(int CityId) {
-        try { return Ok(_repository.GetById(CityId)); }
+    public ActionResult<CityDto> GetCityById(int CityId) {
+        try { return Ok(_repository.GetCityById(CityId)); }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<CityDto>> GetAll() {
-        return Ok(_repository.GetAll());
+    public ActionResult<IEnumerable<CityDto>> GetAllCities() {
+        return Ok(_repository.GetAllCities());
     }
 
     [HttpGet("search/{nameFragment}")]
-    public ActionResult<IEnumerable<CityDto>> FindByName(string nameFragment) {
-        return Ok(_repository.FindByName(nameFragment));
+    public ActionResult<IEnumerable<CityDto>> FindCitiesByName(string nameFragment) {
+        return Ok(_repository.FindCitiesByName(nameFragment));
     }
 
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<CityDto> Add([FromBody] CityDtoInsert city) {
+    public ActionResult<CityDto> AddCity([FromBody] CityDtoInsert city) {
         try {
-            CityDto newCity = _repository.Add(city);
+            CityDto newCity = _repository.AddCity(city);
             return CreatedAtAction(nameof(GetById), new { CityId = newCity.cityId }, newCity);
         }
         catch (CityAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
@@ -46,17 +46,17 @@ public class CityController : Controller {
     [HttpPut]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<CityDto> Update([FromBody] CityDto city) {
-        try { return Ok(_repository.Update(city)); }
+    public ActionResult<CityDto> UpdateCity([FromBody] CityDto city) {
+        try { return Ok(_repository.UpdateCity(city)); }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
     [HttpDelete("{CityId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult Delete(int CityId) {
+    public ActionResult DeleteCity(int CityId) {
         try {
-            _repository.Delete(CityId);
+            _repository.DeleteCity(CityId);
             return NoContent();
         }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }

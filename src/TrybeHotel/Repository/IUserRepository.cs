@@ -4,11 +4,11 @@ using TrybeHotel.Dto;
 namespace TrybeHotel.Repository;
 
 public interface IUserRepository {
-    UserDto Add(UserDtoInsert user);
+    UserDto AddUser(UserDtoInsert user);
     UserDto Login(LoginDto login);
-    UserDto Get(int userId);
-    UserDto Get(string userEmail);
-    IEnumerable<UserDto> GetAll();
-    UserDto Update(UserDtoUpdate userUpdate, string userType);
-    void Delete(int userId);
+    UserDto GetUserById(int userId);
+    UserDto GetUserByEmail(string userEmail);
+    IEnumerable<UserDto> GetAllUsers();
+    UserDto UpdateUser(UserDtoUpdate userUpdate, string userType);
+    void DeleteUser(int userId);
 }

@@ -25,7 +25,7 @@ public class UserRepository : IUserRepository {
         return SimpleMapper.Map<User, UserDto>(user);
     }
 
-    public UserDto Add(UserDtoInsert user) {
+    public UserDto AddUser(UserDtoInsert user) {
         try {
             Get(user.Email);
             //Exception thrown if the email is already registered.
@@ -44,21 +44,21 @@ public class UserRepository : IUserRepository {
         }
     }
 
-    public UserDto Get(int userId) {
+    public UserDto GetUserById(int userId) {
         User user = _getModel.User(userId);
         return SimpleMapper.Map<User, UserDto>(user);
     }
 
-    public UserDto Get(string userEmail) {
+    public UserDto GetUserByEmail(string userEmail) {
         User user = _getModel.User(userEmail);
         return SimpleMapper.Map<User, UserDto>(user);
     }
 
-    public IEnumerable<UserDto> GetAll() {
+    public IEnumerable<UserDto> GetAllUsers() {
         return _context.Users.Select(u => SimpleMapper.Map<User, UserDto>(u));
     }
 
-    public UserDto Update(UserDtoUpdate userUpdate, string userType) {
+    public UserDto UpdateUser(UserDtoUpdate userUpdate, string userType) {
         User user = _getModel.User(userUpdate.UserId);
 
         user.Name = userUpdate.Name;
@@ -72,7 +72,7 @@ public class UserRepository : IUserRepository {
         return SimpleMapper.Map<User, UserDto>(user);
     }
 
-    public void Delete(int userId) {
+    public void DeleteUser(int userId) {
         throw new NotImplementedException();
     }
 }

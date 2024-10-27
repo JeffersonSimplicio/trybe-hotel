@@ -21,14 +21,14 @@ public class UserController : Controller {
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public IActionResult GetAll() {
-        return Ok(_repository.GetAll());
+    public IActionResult GetAllUsers() {
+        return Ok(_repository.GetAllUsers());
     }
 
     [HttpPost]
-    public IActionResult Add([FromBody] UserDtoInsert user) {
+    public IActionResult AddUser([FromBody] UserDtoInsert user) {
         try {
-            return Created("", _repository.Add(user));
+            return Created("", _repository.AddUser(user));
         }
         catch (EmailAlreadyExistsException ex) {
             return Conflict(new { message = ex.Message });
@@ -37,11 +37,11 @@ public class UserController : Controller {
 
     [HttpPut]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public IActionResult Update([FromBody] UserDtoUpdate userUpdate) {
+    public IActionResult UpdateUser([FromBody] UserDtoUpdate userUpdate) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
             string userType = token!.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)!.Value;
-            UserDto user = _repository.Update(userUpdate, userType);
+            UserDto user = _repository.UpdateUser(userUpdate, userType);
             return Ok(new { token = new TokenGenerator().Generate(user) });
         }
         catch (UserNotFoundException ex) { return NotFound(ex.Message); }
