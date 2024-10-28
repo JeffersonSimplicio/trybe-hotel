@@ -32,13 +32,13 @@ public class CityRepository : ICityRepository {
     }
 
     public CityDto AddCity(CityDtoInsert city) {
-        var existingCity = _context
+        bool CityExists = _context
             .Cities
-            .FirstOrDefault(c =>
+            .Any(c =>
                 c.Name.ToLower() == city.name.ToLower() &&
                 c.State.ToLower() == city.state.ToLower()
             );
-        if (existingCity != null) throw new CityAlreadyExistsException(city.name, city.state);
+        if (CityExists) throw new CityAlreadyExistsException(city.name, city.state);
 
         City cityEntity = SimpleMapper.Map<CityDtoInsert, City>(city);
 
