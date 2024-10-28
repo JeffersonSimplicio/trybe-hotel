@@ -57,7 +57,7 @@ public class GeoService : IGeoService {
     // 12. Desenvolva o endpoint GET /geo/address
     public async Task<List<GeoDtoHotelResponse>> GetHotelsByGeo(GeoDto geoDto, IHotelRepository repository) {
         GeoDtoResponse userLocal = await GetGeoLocation(geoDto);
-        var listHotels = repository.GetHotels();
+        var listHotels = repository.GetAllHotels();
 
         var hotelsWithDistance = await Task.WhenAll(listHotels.Select(async hotel => {
             GeoDtoResponse hotelLocal = await GetGeoLocation(new GeoDto() {

@@ -2,6 +2,7 @@ using TrybeHotel.Models;
 using TrybeHotel.Dto;
 using TrybeHotel.Utils;
 using TrybeHotel.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace TrybeHotel.Repository;
 
@@ -13,8 +14,24 @@ public class HotelRepository : IHotelRepository {
         _getModel = getModel;
     }
 
-    //  5. Refatore o endpoint GET /hotel
-    public IEnumerable<HotelDto> GetHotels() {
+    public IEnumerable<HotelDto> GetHotelsByCity(int cityId) {
+        _getModel.City(cityId);
+        var hotels = from hotel in _context.Hotels
+                     join city in _context.Cities
+                     on hotel.CityId equals city.CityId
+                     where hotel.CityId == cityId
+                     select new HotelDto {
+                         HotelId = hotel.HotelId,
+                         Name = hotel.Name,
+                         Address = hotel.Address,
+                         CityId = city.CityId,
+                         cityName = city.Name,
+                         state = city.State,
+                     };
+        return hotels;
+    }
+
+    public IEnumerable<HotelDto> GetAllHotels() {
         var hotels = from hotel in _context.Hotels
                      join city in _context.Cities
                      on hotel.CityId equals city.CityId

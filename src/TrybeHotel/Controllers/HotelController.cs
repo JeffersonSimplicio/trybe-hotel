@@ -17,9 +17,17 @@ public class HotelController : Controller {
         _repository = repository;
     }
 
+    [HttpGet("city/{cityId}")]
+    public ActionResult<IEnumerable<HotelDto>> GetHotelsByCity(int cityId) {
+        try {
+            return Ok(_repository.GetHotelsByCity(cityId));
+        }
+        catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
+    }
+
     [HttpGet]
-    public ActionResult<IEnumerable<HotelDto>> GetHotels() {
-        return Ok(_repository.GetHotels());
+    public ActionResult<IEnumerable<HotelDto>> GetAllHotels() {
+        return Ok(_repository.GetAllHotels());
     }
 
     [HttpPost]
@@ -29,7 +37,7 @@ public class HotelController : Controller {
         try {
             return Created("", _repository.AddHotel(hotel));
         }
-        catch (CityNotFoundException ex ) { return NotFound(new { ex.Message }); }
+        catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
         catch (HotelAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
     }
 }
