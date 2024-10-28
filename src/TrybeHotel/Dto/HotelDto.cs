@@ -8,3 +8,9 @@ public class HotelDto {
     public string? cityName { get; set; }
     public string state { get; set; }
 }
+
+public class HotelInsertDto {
+    public string name { get; set; }
+    public string address { get; set; }
+    public int cityId { get; set; }
+}

@@ -6,6 +6,6 @@ namespace TrybeHotel.Repository
     public interface IHotelRepository
     {
         IEnumerable<HotelDto> GetHotels();
-        HotelDto AddHotel(Hotel hotel);
+        HotelDto AddHotel(HotelInsertDto hotelInsert);
     }
 }
