@@ -28,21 +28,25 @@ public class TrybeHotelContext : DbContext, ITrybeHotelContext {
         modelBuilder.Entity<City>()
             .HasMany(c => c.Hotels)
             .WithOne(h => h.City)
-            .HasForeignKey(h => h.CityId);
+            .HasForeignKey(h => h.CityId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Hotel>()
             .HasMany(h => h.Rooms)
             .WithOne(r => r.Hotel)
-            .HasForeignKey(r => r.HotelId);
+            .HasForeignKey(r => r.HotelId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Room>()
             .HasMany(r => r.Bookings)
             .WithOne(b => b.Room)
-            .HasForeignKey(b => b.RoomId);
+            .HasForeignKey(b => b.RoomId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<User>()
             .HasMany(u => u.Bookings)
             .WithOne(u => u.User)
-            .HasForeignKey(u => u.UserId);
+            .HasForeignKey(u => u.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
