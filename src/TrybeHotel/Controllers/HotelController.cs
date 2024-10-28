@@ -36,11 +36,22 @@ public class HotelController : Controller {
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<HotelDto> PostHotel([FromBody] HotelInsertDto hotel) {
+    public ActionResult<HotelDto> AddHotel([FromBody] HotelInsertDto hotel) {
         try {
             return Created("", _repository.AddHotel(hotel));
         }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
         catch (HotelAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
+    }
+
+    [HttpDelete("{hotelId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Admin")]
+    public ActionResult DeleteHotel(int hotelId) {
+        try {
+            _repository.DeleteHotel(hotelId);
+            return NoContent();
+        }
+        catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 }

@@ -16,17 +16,17 @@ public class HotelRepository : IHotelRepository {
 
     public HotelDto GetHotelById(int hotelId) {
         HotelDto? selectedHotel = (from hotel in _context.Hotels
-                              join city in _context.Cities
-                              on hotel.CityId equals city.CityId
-                              where hotel.HotelId == hotelId
-                              select new HotelDto {
-                                  HotelId = hotel.HotelId,
-                                  Name = hotel.Name,
-                                  Address = hotel.Address,
-                                  CityId = city.CityId,
-                                  cityName = city.Name,
-                                  state = city.State,
-                              }).FirstOrDefault();
+                                   join city in _context.Cities
+                                   on hotel.CityId equals city.CityId
+                                   where hotel.HotelId == hotelId
+                                   select new HotelDto {
+                                       HotelId = hotel.HotelId,
+                                       Name = hotel.Name,
+                                       Address = hotel.Address,
+                                       CityId = city.CityId,
+                                       cityName = city.Name,
+                                       state = city.State,
+                                   }).FirstOrDefault();
         if (selectedHotel == null) throw new HotelNotFoundException();
         return selectedHotel;
     }
@@ -85,5 +85,15 @@ public class HotelRepository : IHotelRepository {
             cityName = city.Name,
             state = city.State,
         };
+    }
+
+    public void DeleteHotel(int hotelId) {
+        Hotel? selectedHotel = _context
+            .Hotels
+            .Where(h => h.HotelId == hotelId)
+            .FirstOrDefault();
+        if (selectedHotel == null) throw new HotelNotFoundException();
+        _context.Hotels.Remove(selectedHotel);
+        _context.SaveChanges();
     }
 }
