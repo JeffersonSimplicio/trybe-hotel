@@ -42,13 +42,13 @@ public class UserController : Controller {
         }
     }
 
-    [HttpPut]
+    [HttpPut("{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public ActionResult<UserDto> UpdateUser([FromBody] UserDtoUpdate userUpdate) {
+    public ActionResult<UserDto> UpdateUser(int userId, [FromBody] UserDtoUpdate userUpdate) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
             string userType = token!.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)!.Value;
-            UserDto user = _repository.UpdateUser(userUpdate, userType);
+            UserDto user = _repository.UpdateUser(userId, userUpdate, userType);
             return Ok(user);
         }
         catch (UserNotFoundException ex) { return NotFound(ex.Message); }
@@ -68,7 +68,7 @@ public class UserController : Controller {
         catch (UserNotFoundException ex) { return NotFound(ex.Message); }
     }
 
-    [HttpDelete("{UserId}")]
+    [HttpDelete("{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
     public ActionResult AdminDeleteUser(int UserId) {

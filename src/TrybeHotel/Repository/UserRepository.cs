@@ -2,6 +2,7 @@ using TrybeHotel.Models;
 using TrybeHotel.Dto;
 using TrybeHotel.Exceptions;
 using TrybeHotel.Utils;
+using System.Linq;
 
 namespace TrybeHotel.Repository;
 
@@ -61,11 +62,18 @@ public class UserRepository : IUserRepository {
         return _context.Users.Select(u => SimpleMapper.Map<User, UserDto>(u));
     }
 
-    public UserDto UpdateUser(UserDtoUpdate userUpdate, string userType) {
-        User user = _getModel.User(userUpdate.UserId);
+    public UserDto UpdateUser(int userId, UserDtoUpdate userUpdate, string userType) {
+        User user = _getModel.User(userId);
+
+        bool duplicateUserExists = _context.Users.Any(
+            u => u.Email.ToLower() == userUpdate.Email.ToLower() &&
+            u.UserId != userId
+        );
+        if (duplicateUserExists) throw new EmailAlreadyExistsException();
 
         user.Name = userUpdate.Name;
         user.Email = userUpdate.Email;
+        // Caso o usuario informe a senha, ela sera atualizada
         if (userUpdate.Password != null) user.Password = userUpdate.Password;
         // Apenas "Admin", podem atualizar o userType do usuario.
         if (userType == "admin") user.UserType = userUpdate.UserType;

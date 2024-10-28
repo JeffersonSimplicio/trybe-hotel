@@ -10,7 +10,7 @@ public interface IUserRepository {
     UserDto GetUserByEmail(string userEmail);
     IEnumerable<UserDto> GetUsersByName(string userName);
     IEnumerable<UserDto> GetAllUsers();
-    UserDto UpdateUser(UserDtoUpdate userUpdate, string userType);
+    UserDto UpdateUser(int userId, UserDtoUpdate userUpdate, string userType);
     void DeleteOwnAccount(string userEmail);
     void AdminDeleteUser(int userId);
 }
