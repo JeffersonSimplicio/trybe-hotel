@@ -16,15 +16,15 @@ public class CityController : Controller {
         _repository = repository;
     }
 
-    [HttpGet("{CityId}/hotel")]
-    public ActionResult<CityDto> FindHotelByCity(int CityId) {
-        try { return Ok(_repository.FindHotelsByCity(CityId)); }
+    [HttpGet("{cityId}/hotel")]
+    public ActionResult<CityDto> FindHotelByCity(int cityId) {
+        try { return Ok(_repository.FindHotelsByCity(cityId)); }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
-    [HttpGet("{CityId}")]
-    public ActionResult<CityDto> GetCityById(int CityId) {
-        try { return Ok(_repository.GetCityById(CityId)); }
+    [HttpGet("{cityId}")]
+    public ActionResult<CityDto> GetCityById(int cityId) {
+        try { return Ok(_repository.GetCityById(cityId)); }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
@@ -49,20 +49,21 @@ public class CityController : Controller {
         catch (CityAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
     }
 
-    [HttpPut]
+    [HttpPut("{cityId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<CityDto> UpdateCity([FromBody] CityDto city) {
-        try { return Ok(_repository.UpdateCity(city)); }
+    public ActionResult<CityDto> UpdateCity(int cityId, [FromBody] CityDtoInsert city) {
+        try { return Ok(_repository.UpdateCity(cityId, city)); }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
+        catch (CityAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
     }
 
-    [HttpDelete("{CityId}")]
+    [HttpDelete("{cityId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult DeleteCity(int CityId) {
+    public ActionResult DeleteCity(int cityId) {
         try {
-            _repository.DeleteCity(CityId);
+            _repository.DeleteCity(cityId);
             return NoContent();
         }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }

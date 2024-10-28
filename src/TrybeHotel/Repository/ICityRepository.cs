@@ -10,6 +10,6 @@ public interface ICityRepository {
     IEnumerable<HotelDto> FindHotelsByCity(int cityId);
     CityDto AddCity(CityDtoInsert city);
     //Talvez depois deva cria uma DTO para update
-    CityDto UpdateCity(CityDto city);
+    CityDto UpdateCity(int cityId, CityDtoInsert city);
     void DeleteCity(int id);
 }

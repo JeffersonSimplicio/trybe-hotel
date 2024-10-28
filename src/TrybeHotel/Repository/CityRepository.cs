@@ -64,8 +64,15 @@ public class CityRepository : ICityRepository {
         return SimpleMapper.Map<City, CityDto>(cityEntity);
     }
 
-    public CityDto UpdateCity(CityDto city) {
-        City existingCity = _getModel.City(city.cityId);
+    public CityDto UpdateCity(int cityId, CityDtoInsert city) {
+        City existingCity = _getModel.City(cityId);
+
+        bool duplicateCityExists = _context.Cities.Any(
+            c => c.Name.ToLower() == city.name.ToLower() &&
+            c.State.ToLower() == city.state.ToLower() &&
+            c.CityId != cityId
+        );
+        if (duplicateCityExists) throw new CityAlreadyExistsException(city.name, city.state);
 
         existingCity.Name = city.name;
         existingCity.State = city.state;

@@ -52,6 +52,7 @@ public class UserController : Controller {
             return Ok(user);
         }
         catch (UserNotFoundException ex) { return NotFound(ex.Message); }
+        catch (EmailAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
     }
 
     [HttpDelete]

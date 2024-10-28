@@ -69,7 +69,7 @@ public class UserRepository : IUserRepository {
             u => u.Email.ToLower() == userUpdate.Email.ToLower() &&
             u.UserId != userId
         );
-        if (duplicateUserExists) throw new EmailAlreadyExistsException();
+        if (duplicateUserExists) throw new EmailAlreadyExistsException(userUpdate.Email);
 
         user.Name = userUpdate.Name;
         user.Email = userUpdate.Email;
