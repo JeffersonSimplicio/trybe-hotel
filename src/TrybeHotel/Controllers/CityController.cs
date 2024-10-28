@@ -16,6 +16,12 @@ public class CityController : Controller {
         _repository = repository;
     }
 
+    [HttpGet("{CityId}/hotel")]
+    public ActionResult<CityDto> FindHotelByCity(int CityId) {
+        try { return Ok(_repository.FindHotelsByCity(CityId)); }
+        catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
+    }
+
     [HttpGet("{CityId}")]
     public ActionResult<CityDto> GetCityById(int CityId) {
         try { return Ok(_repository.GetCityById(CityId)); }

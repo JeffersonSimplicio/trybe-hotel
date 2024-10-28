@@ -17,14 +17,6 @@ public class HotelController : Controller {
         _repository = repository;
     }
 
-    [HttpGet("city/{cityId}")]
-    public ActionResult<IEnumerable<HotelDto>> GetHotelsByCity(int cityId) {
-        try {
-            return Ok(_repository.GetHotelsByCity(cityId));
-        }
-        catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
-    }
-
     [HttpGet("search/{nameFragment}")]
     public ActionResult<IEnumerable<HotelDto>> GetHotelsByName(string nameFragment) {
         return Ok(_repository.GetHotelsByName(nameFragment));

@@ -7,6 +7,7 @@ public interface ICityRepository {
     CityDto GetCityById(int id);
     IEnumerable<CityDto> GetAllCities();
     IEnumerable<CityDto> FindCitiesByName(string name);
+    IEnumerable<HotelDto> FindHotelsByCity(int cityId);
     CityDto AddCity(CityDtoInsert city);
     //Talvez depois deva cria uma DTO para update
     CityDto UpdateCity(CityDto city);

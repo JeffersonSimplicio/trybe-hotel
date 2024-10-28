@@ -31,6 +31,23 @@ public class CityRepository : ICityRepository {
         return cities;
     }
 
+    public IEnumerable<HotelDto> FindHotelsByCity(int cityId) {
+        _getModel.City(cityId);
+        var hotels = from hotel in _context.Hotels
+                     join city in _context.Cities
+                     on hotel.CityId equals city.CityId
+                     where hotel.CityId == cityId
+                     select new HotelDto {
+                         HotelId = hotel.HotelId,
+                         Name = hotel.Name,
+                         Address = hotel.Address,
+                         CityId = city.CityId,
+                         cityName = city.Name,
+                         state = city.State,
+                     };
+        return hotels;
+    }
+
     public CityDto AddCity(CityDtoInsert city) {
         bool CityExists = _context
             .Cities
