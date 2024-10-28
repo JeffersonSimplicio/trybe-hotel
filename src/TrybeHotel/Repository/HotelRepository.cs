@@ -18,7 +18,7 @@ public class HotelRepository : IHotelRepository {
         var hotels = from hotel in _context.Hotels
                      join city in _context.Cities
                      on hotel.CityId equals city.CityId
-                     where hotel.Name.ToLower() == hotelName.ToLower()
+                     where hotel.Name.ToLower().Contains(hotelName.ToLower())
                      select new HotelDto {
                          HotelId = hotel.HotelId,
                          Name = hotel.Name,
