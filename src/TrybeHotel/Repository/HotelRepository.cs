@@ -3,6 +3,7 @@ using TrybeHotel.Dto;
 using TrybeHotel.Utils;
 using TrybeHotel.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using System.Security;
 
 namespace TrybeHotel.Repository;
 
@@ -84,6 +85,40 @@ public class HotelRepository : IHotelRepository {
             CityId = hotel.CityId,
             cityName = city.Name,
             state = city.State,
+        };
+    }
+
+    public HotelDto UpdateHotel(int hotelId, HotelInsertDto hotelInsert) {
+        // Verifica se o hotel existe
+        Hotel? hotelExists = _context.Hotels.SingleOrDefault(h => h.HotelId == hotelId);
+        if (hotelExists == null) throw new HotelNotFoundException();
+
+        // Verifica se o cityId passado pertece a alguma cidade
+        City hotelCity = _getModel.City(hotelInsert.cityId);
+
+        // Verifica se existe outro hotel na mesma cidade com o mesmo nome
+        // Além do que esta sendo editado.
+        bool duplicateHotelExists = _context.Hotels.Any(
+            h =>
+                h.Name.ToLower() == hotelInsert.name.ToLower() &&
+                h.CityId == hotelInsert.cityId &&
+                h.HotelId != hotelId
+        );
+        if (duplicateHotelExists) throw new HotelAlreadyExistsException();
+
+        hotelExists.Name = hotelInsert.name;
+        hotelExists.Address = hotelInsert.address;
+        hotelExists.CityId = hotelInsert.cityId;
+
+        _context.SaveChanges();
+
+        return new HotelDto {
+            HotelId = hotelExists.HotelId,
+            Name = hotelExists.Name,
+            Address = hotelExists.Address,
+            CityId = hotelExists.CityId,
+            cityName = hotelCity.Name,
+            state = hotelCity.State,
         };
     }
 

@@ -7,5 +7,6 @@ public interface IHotelRepository {
     IEnumerable<HotelDto> GetAllHotels();
     IEnumerable<HotelDto> GetHotelsByName(string hotelName);
     HotelDto AddHotel(HotelInsertDto hotelInsert);
+    HotelDto UpdateHotel(int hotelId, HotelInsertDto hotelInsert);
     void DeleteHotel(int hotelId);
 }
