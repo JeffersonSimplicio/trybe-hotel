@@ -25,12 +25,11 @@ public class UserController : Controller {
         return Ok(_repository.GetAllUsers());
     }
 
-
-    [HttpGet]
+    [HttpGet("search/{nameFragment}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<IEnumerable<UserDto>> GetUsersByName([FromBody] string userName) {
-        return Ok(_repository.GetUsersByName(userName));
+    public ActionResult<IEnumerable<UserDto>> GetUsersByName(string nameFragment) {
+        return Ok(_repository.GetUsersByName(nameFragment));
     }
 
     [HttpPost]
