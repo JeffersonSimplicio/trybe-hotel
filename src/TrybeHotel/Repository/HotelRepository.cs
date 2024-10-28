@@ -14,6 +14,23 @@ public class HotelRepository : IHotelRepository {
         _getModel = getModel;
     }
 
+    public HotelDto GetHotelById(int hotelId) {
+        HotelDto? selectedHotel = (from hotel in _context.Hotels
+                              join city in _context.Cities
+                              on hotel.CityId equals city.CityId
+                              where hotel.HotelId == hotelId
+                              select new HotelDto {
+                                  HotelId = hotel.HotelId,
+                                  Name = hotel.Name,
+                                  Address = hotel.Address,
+                                  CityId = city.CityId,
+                                  cityName = city.Name,
+                                  state = city.State,
+                              }).FirstOrDefault();
+        if (selectedHotel == null) throw new HotelNotFoundException();
+        return selectedHotel;
+    }
+
     public IEnumerable<HotelDto> GetHotelsByName(string hotelName) {
         var hotels = from hotel in _context.Hotels
                      join city in _context.Cities

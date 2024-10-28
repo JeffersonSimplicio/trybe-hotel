@@ -27,6 +27,12 @@ public class HotelController : Controller {
         return Ok(_repository.GetAllHotels());
     }
 
+    [HttpGet("{hotelId}")]
+    public ActionResult<HotelDto> GetHotelsById(int hotelId) {
+        try { return Ok(_repository.GetHotelById(hotelId)); }
+        catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
+    }
+
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
