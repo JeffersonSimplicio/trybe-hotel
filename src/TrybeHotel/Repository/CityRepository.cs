@@ -26,7 +26,7 @@ public class CityRepository : ICityRepository {
 
     public IEnumerable<CityDto> FindCitiesByName(string name) {
         var cities = _context.Cities
-            .Where(c => c.Name.Contains(name))
+            .Where(c => c.Name.ToLower().Contains(name.ToLower()))
             .Select(c => SimpleMapper.Map<City, CityDto>(c));
         return cities;
     }

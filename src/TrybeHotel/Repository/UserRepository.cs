@@ -53,7 +53,7 @@ public class UserRepository : IUserRepository {
 
     public IEnumerable<UserDto> GetUsersByName(string userName) {
         return _context.Users
-            .Where(u => u.Name.Contains(userName))
+            .Where(u => u.Name.ToLower().Contains(userName.ToLower()))
             .Select(u => SimpleMapper.Map<User, UserDto>(u));
     }
 
