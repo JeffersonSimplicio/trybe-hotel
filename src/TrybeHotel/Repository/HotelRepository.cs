@@ -31,6 +31,22 @@ public class HotelRepository : IHotelRepository {
         return hotels;
     }
 
+    public IEnumerable<HotelDto> GetHotelsByName(string hotelName) {
+        var hotels = from hotel in _context.Hotels
+                     join city in _context.Cities
+                     on hotel.CityId equals city.CityId
+                     where hotel.Name.ToLower() == hotelName.ToLower()
+                     select new HotelDto {
+                         HotelId = hotel.HotelId,
+                         Name = hotel.Name,
+                         Address = hotel.Address,
+                         CityId = city.CityId,
+                         cityName = city.Name,
+                         state = city.State,
+                     };
+        return hotels;
+    }
+
     public IEnumerable<HotelDto> GetAllHotels() {
         var hotels = from hotel in _context.Hotels
                      join city in _context.Cities

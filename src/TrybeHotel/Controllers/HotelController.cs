@@ -25,6 +25,11 @@ public class HotelController : Controller {
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
+    [HttpGet("search/{nameFragment}")]
+    public ActionResult<IEnumerable<HotelDto>> GetHotelsByName(string nameFragment) {
+        return Ok(_repository.GetHotelsByName(nameFragment));
+    }
+
     [HttpGet]
     public ActionResult<IEnumerable<HotelDto>> GetAllHotels() {
         return Ok(_repository.GetAllHotels());
