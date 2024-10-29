@@ -10,9 +10,9 @@ public class HotelDto {
 }
 
 public class HotelInsertDto {
-    public string name { get; set; }
-    public string address { get; set; }
-    public int cityId { get; set; }
+    public string Name { get; set; }
+    public string Address { get; set; }
+    public int CityId { get; set; }
 }
 
 public class HotelWithRoomsDto : HotelDto {

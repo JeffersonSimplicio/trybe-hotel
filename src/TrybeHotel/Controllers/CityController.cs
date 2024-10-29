@@ -44,7 +44,7 @@ public class CityController : Controller {
     public ActionResult<CityDto> AddCity([FromBody] CityDtoInsert city) {
         try {
             CityDto newCity = _repository.AddCity(city);
-            return CreatedAtAction(nameof(GetCityById), new { CityId = newCity.cityId }, newCity);
+            return CreatedAtAction(nameof(GetCityById), new { CityId = newCity.CityId }, newCity);
         }
         catch (CityAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
     }

@@ -49,8 +49,8 @@ public class GeoService : IGeoService {
 
         var result = await response.Content.ReadFromJsonAsync<List<GeoDtoResponse>>();
         return new GeoDtoResponse() {
-            lat = result![0].lat,
-            lon = result[0].lon,
+            Lat = result![0].Lat,
+            Lon = result[0].Lon,
         };
     }
 
@@ -67,8 +67,8 @@ public class GeoService : IGeoService {
             });
 
             int distance = CalculateDistance(
-                userLocal.lat, userLocal.lon,
-                hotelLocal.lat, hotelLocal.lon
+                userLocal.Lat, userLocal.Lon,
+                hotelLocal.Lat, hotelLocal.Lon
             );
 
             return new GeoDtoHotelResponse() {

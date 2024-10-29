@@ -52,10 +52,10 @@ public class CityRepository : ICityRepository {
         bool CityExists = _context
             .Cities
             .Any(c =>
-                c.Name.ToLower() == city.name.ToLower() &&
-                c.State.ToLower() == city.state.ToLower()
+                c.Name.ToLower() == city.Name.ToLower() &&
+                c.State.ToLower() == city.State.ToLower()
             );
-        if (CityExists) throw new CityAlreadyExistsException(city.name, city.state);
+        if (CityExists) throw new CityAlreadyExistsException(city.Name, city.State);
 
         City cityEntity = SimpleMapper.Map<CityDtoInsert, City>(city);
 
@@ -68,14 +68,14 @@ public class CityRepository : ICityRepository {
         City existingCity = _getModel.City(cityId);
 
         bool duplicateCityExists = _context.Cities.Any(
-            c => c.Name.ToLower() == city.name.ToLower() &&
-            c.State.ToLower() == city.state.ToLower() &&
+            c => c.Name.ToLower() == city.Name.ToLower() &&
+            c.State.ToLower() == city.State.ToLower() &&
             c.CityId != cityId
         );
-        if (duplicateCityExists) throw new CityAlreadyExistsException(city.name, city.state);
+        if (duplicateCityExists) throw new CityAlreadyExistsException(city.Name, city.State);
 
-        existingCity.Name = city.name;
-        existingCity.State = city.state;
+        existingCity.Name = city.Name;
+        existingCity.State = city.State;
 
         _context.SaveChanges();
         return SimpleMapper.Map<City, CityDto>(existingCity);

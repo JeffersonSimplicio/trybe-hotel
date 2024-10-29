@@ -74,14 +74,14 @@ public class HotelRepository : IHotelRepository {
     }
 
     public HotelDto AddHotel(HotelInsertDto hotelInsert) {
-        City city = _getModel.City(hotelInsert.cityId);
+        City city = _getModel.City(hotelInsert.CityId);
 
         bool hotelExists = _context.Hotels.Any(
             h =>
-                h.Name.ToLower() == hotelInsert.name.ToLower() &&
-                h.CityId == hotelInsert.cityId
+                h.Name.ToLower() == hotelInsert.Name.ToLower() &&
+                h.CityId == hotelInsert.CityId
         );
-        if (hotelExists) throw new HotelAlreadyExistsException(hotelInsert.name, city.Name);
+        if (hotelExists) throw new HotelAlreadyExistsException(hotelInsert.Name, city.Name);
 
         Hotel hotel = SimpleMapper.Map<HotelInsertDto, Hotel>(hotelInsert);
 
@@ -104,21 +104,21 @@ public class HotelRepository : IHotelRepository {
         if (hotelExists == null) throw new HotelNotFoundException();
 
         // Verifica se o cityId passado pertece a alguma cidade
-        City hotelCity = _getModel.City(hotelInsert.cityId);
+        City hotelCity = _getModel.City(hotelInsert.CityId);
 
         // Verifica se existe outro hotel na mesma cidade com o mesmo nome
         // Além do que esta sendo editado.
         bool duplicateHotelExists = _context.Hotels.Any(
             h =>
-                h.Name.ToLower() == hotelInsert.name.ToLower() &&
-                h.CityId == hotelInsert.cityId &&
+                h.Name.ToLower() == hotelInsert.Name.ToLower() &&
+                h.CityId == hotelInsert.CityId &&
                 h.HotelId != hotelId
         );
         if (duplicateHotelExists) throw new HotelAlreadyExistsException();
 
-        hotelExists.Name = hotelInsert.name;
-        hotelExists.Address = hotelInsert.address;
-        hotelExists.CityId = hotelInsert.cityId;
+        hotelExists.Name = hotelInsert.Name;
+        hotelExists.Address = hotelInsert.Address;
+        hotelExists.CityId = hotelInsert.CityId;
 
         _context.SaveChanges();
 
