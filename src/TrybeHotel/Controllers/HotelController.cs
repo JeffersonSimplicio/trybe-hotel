@@ -28,7 +28,7 @@ public class HotelController : Controller {
     }
 
     [HttpGet("{hotelId}")]
-    public ActionResult<HotelDto> GetHotelsById(int hotelId) {
+    public ActionResult<HotelDto> GetHotelById(int hotelId) {
         try { return Ok(_repository.GetHotelById(hotelId)); }
         catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
@@ -38,7 +38,12 @@ public class HotelController : Controller {
     [Authorize(Policy = "Admin")]
     public ActionResult<HotelDto> AddHotel([FromBody] HotelInsertDto hotel) {
         try {
-            return Created("", _repository.AddHotel(hotel));
+            HotelDto newHotel = _repository.AddHotel(hotel);
+            return CreatedAtAction(
+                nameof(GetHotelById),
+                new { hotelId = newHotel.HotelId },
+                newHotel
+            );
         }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
         catch (HotelAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
