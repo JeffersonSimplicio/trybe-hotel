@@ -17,7 +17,7 @@ public class RoomRepository : IRoomRepository {
         _getModel = getModel;
     }
 
-    private HotelDto GetHotelById(int HotelId) {
+    private HotelDto GetHotelDtoById(int HotelId) {
         HotelDto? selectedHotel = (from hotel in _context.Hotels
                                   join city in _context.Cities
                                   on hotel.CityId equals city.CityId
@@ -37,15 +37,14 @@ public class RoomRepository : IRoomRepository {
     }
 
     public RoomDto GetRoomById(int roomId) {
-        Room? room = _context.Rooms.SingleOrDefault(r => r.RoomId == roomId);
-        if (room == null) throw new RoomNotFoundException();
+        Room room = _getModel.Room(roomId);
 
         return new RoomDto {
             RoomId = room.RoomId,
             Name = room.Name,
             Capacity = room.Capacity,
             Image = room.Image,
-            Hotel = GetHotelById(room.HotelId),
+            Hotel = GetHotelDtoById(room.HotelId),
         };
     }
 
@@ -82,18 +81,17 @@ public class RoomRepository : IRoomRepository {
             Name = room.Name,
             Capacity = room.Capacity,
             Image = room.Image,
-            Hotel = GetHotelById(room.HotelId),
+            Hotel = GetHotelDtoById(room.HotelId),
         };
         return newRoom;
     }
 
     public RoomDto UpdateRoom(int roomId, RoomInsertDto roomInsert) {
         // VerificationException se o quarto existe
-        Room? room = _context.Rooms.SingleOrDefault(r => r.RoomId == roomId);
-        if (room == null) throw new RoomNotFoundException();
+        Room room = _getModel.Room(roomId);
 
         // Verifica se o hotel existe
-        HotelDto hotel = GetHotelById(roomInsert.HotelId);
+        HotelDto hotel = GetHotelDtoById(roomInsert.HotelId);
 
         room.HotelId = roomInsert.HotelId;
         room.Name = roomInsert.Name;
@@ -111,8 +109,9 @@ public class RoomRepository : IRoomRepository {
         };
     }
 
-    public void DeleteRoom(int RoomId) {
-        _context.Rooms.Remove(_context.Rooms.First(r => r.RoomId == RoomId));
+    public void DeleteRoom(int roomId) {
+        Room room = _getModel.Room(roomId);
+        _context.Rooms.Remove(room);
         _context.SaveChanges();
     }
 }

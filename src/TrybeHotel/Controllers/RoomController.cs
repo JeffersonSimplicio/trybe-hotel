@@ -53,11 +53,14 @@ public class RoomController : Controller {
         catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
-    [HttpDelete("{RoomId}")]
+    [HttpDelete("{roomId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult Delete(int RoomId) {
-        _repository.DeleteRoom(RoomId);
-        return NoContent();
+    public ActionResult Delete(int roomId) {
+        try {
+            _repository.DeleteRoom(roomId);
+            return NoContent();
+        }
+        catch (RoomNotFoundException ex) { return NotFound(ex.Message); }
     }
 }

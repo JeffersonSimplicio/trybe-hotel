@@ -8,5 +8,5 @@ public interface IRoomRepository {
     IEnumerable<RoomInfoDto> GetAllRooms(int page, int size);
     RoomDto AddRoom(RoomInsertDto roomInsert);
     RoomDto UpdateRoom(int roomId, RoomInsertDto roomInsert);
-    void DeleteRoom(int RoomId);
+    void DeleteRoom(int roomId);
 }
