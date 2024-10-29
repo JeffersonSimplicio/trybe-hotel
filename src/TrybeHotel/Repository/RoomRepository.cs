@@ -1,12 +1,17 @@
 using TrybeHotel.Models;
 using TrybeHotel.Dto;
+using TrybeHotel.Utils;
+using TrybeHotel.Exceptions;
 
 namespace TrybeHotel.Repository;
 
 public class RoomRepository : IRoomRepository {
     protected readonly ITrybeHotelContext _context;
-    public RoomRepository(ITrybeHotelContext context) {
+    protected readonly IGetModel _getModel;
+
+    public RoomRepository(ITrybeHotelContext context, IGetModel getModel) {
         _context = context;
+        _getModel = getModel;
     }
 
     private HotelDto GetHotelById(int HotelId) {
@@ -25,7 +30,6 @@ public class RoomRepository : IRoomRepository {
         return selectedHotel;
     }
 
-    // 7. Refatore o endpoint GET /room
     public IEnumerable<RoomDto> GetRooms(int HotelId) {
         HotelDto hotel = GetHotelById(HotelId);
 
@@ -41,8 +45,17 @@ public class RoomRepository : IRoomRepository {
         return rooms;
     }
 
-    // 8. Refatore o endpoint POST /room
-    public RoomDto AddRoom(Room room) {
+    public RoomDto AddRoom(RoomInsertDto roomInsert) {
+        Hotel? hotel = _context.Hotels.SingleOrDefault(h => h.HotelId == roomInsert.HotelId);
+        if (hotel == null) throw new HotelNotFoundException();
+
+        Room room = new Room() {
+            HotelId= hotel.HotelId,
+            Name = roomInsert.Name,
+            Capacity = roomInsert.Capacity,
+            Image = roomInsert.Image,
+        };
+
         _context.Rooms.Add(room);
         _context.SaveChanges();
 
@@ -53,7 +66,6 @@ public class RoomRepository : IRoomRepository {
             image = room.Image,
             hotel = GetHotelById(room.HotelId),
         };
-
         return newRoom;
     }
 

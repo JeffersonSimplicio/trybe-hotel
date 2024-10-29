@@ -4,6 +4,8 @@ using TrybeHotel.Repository;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using TrybeHotel.Dto;
+using TrybeHotel.Exceptions;
 
 namespace TrybeHotel.Controllers;
 
@@ -23,8 +25,11 @@ public class RoomController : Controller {
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public IActionResult PostRoom([FromBody] Room room) {
-        return Created("", _repository.AddRoom(room));
+    public IActionResult PostRoom([FromBody] RoomInsertDto room) {
+        try {
+            return Created("", _repository.AddRoom(room));
+        }
+        catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
     [HttpDelete("{RoomId}")]
