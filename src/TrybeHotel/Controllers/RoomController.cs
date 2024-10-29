@@ -36,11 +36,20 @@ public class RoomController : Controller {
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<RoomDto> PostRoom([FromBody] RoomInsertDto room) {
+    public ActionResult<RoomDto> AddRoom([FromBody] RoomInsertDto room) {
         try {
             RoomDto newRoom = _repository.AddRoom(room);
             return CreatedAtAction(nameof(GetRoomById), new { roomId = newRoom.RoomId }, newRoom);
         }
+        catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
+    }
+
+    [HttpPut("{roomId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Admin")]
+    public ActionResult<RoomDto> UpdateRoom(int roomId, [FromBody] RoomInsertDto room) {
+        try { return Ok(_repository.UpdateRoom(roomId, room)); }
+        catch (RoomNotFoundException ex) { return NotFound(new { ex.Message }); }
         catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 

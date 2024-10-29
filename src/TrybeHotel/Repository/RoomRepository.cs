@@ -4,6 +4,7 @@ using TrybeHotel.Utils;
 using TrybeHotel.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing;
+using System.Security;
 
 namespace TrybeHotel.Repository;
 
@@ -17,7 +18,7 @@ public class RoomRepository : IRoomRepository {
     }
 
     private HotelDto GetHotelById(int HotelId) {
-        HotelDto selectedHotel = (from hotel in _context.Hotels
+        HotelDto? selectedHotel = (from hotel in _context.Hotels
                                   join city in _context.Cities
                                   on hotel.CityId equals city.CityId
                                   where hotel.HotelId == HotelId
@@ -28,7 +29,10 @@ public class RoomRepository : IRoomRepository {
                                       CityId = city.CityId,
                                       CityName = city.Name,
                                       State = city.State,
-                                  }).First();
+                                  }).SingleOrDefault();
+
+        if (selectedHotel == null) throw new HotelNotFoundException();
+
         return selectedHotel;
     }
 
@@ -81,6 +85,30 @@ public class RoomRepository : IRoomRepository {
             Hotel = GetHotelById(room.HotelId),
         };
         return newRoom;
+    }
+
+    public RoomDto UpdateRoom(int roomId, RoomInsertDto roomInsert) {
+        // VerificationException se o quarto existe
+        Room? room = _context.Rooms.SingleOrDefault(r => r.RoomId == roomId);
+        if (room == null) throw new RoomNotFoundException();
+
+        // Verifica se o hotel existe
+        HotelDto hotel = GetHotelById(roomInsert.HotelId);
+
+        room.HotelId = roomInsert.HotelId;
+        room.Name = roomInsert.Name;
+        room.Capacity = roomInsert.Capacity;
+        room.Image = roomInsert.Image;
+
+        _context.SaveChanges();
+
+        return new RoomDto {
+            RoomId=room.RoomId,
+            Name = roomInsert.Name,
+            Capacity=roomInsert.Capacity,
+            Image = roomInsert.Image,
+            Hotel = hotel,
+        };
     }
 
     public void DeleteRoom(int RoomId) {

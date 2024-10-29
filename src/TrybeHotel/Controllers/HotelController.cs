@@ -53,9 +53,7 @@ public class HotelController : Controller {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
     public ActionResult<HotelDto> UpdateHotel(int hotelId, [FromBody] HotelInsertDto hotel) {
-        try {
-            return Ok(_repository.UpdateHotel(hotelId, hotel));
-        }
+        try { return Ok(_repository.UpdateHotel(hotelId, hotel)); }
         catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
         catch (HotelAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
