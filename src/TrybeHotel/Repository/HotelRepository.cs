@@ -15,21 +15,31 @@ public class HotelRepository : IHotelRepository {
         _getModel = getModel;
     }
 
-    public HotelDto GetHotelById(int hotelId) {
-        HotelDto? selectedHotel = (from hotel in _context.Hotels
-                                   join city in _context.Cities
-                                   on hotel.CityId equals city.CityId
-                                   where hotel.HotelId == hotelId
-                                   select new HotelDto {
-                                       HotelId = hotel.HotelId,
-                                       Name = hotel.Name,
-                                       Address = hotel.Address,
-                                       CityId = city.CityId,
-                                       cityName = city.Name,
-                                       state = city.State,
-                                   }).FirstOrDefault();
-        if (selectedHotel == null) throw new HotelNotFoundException();
-        return selectedHotel;
+    public HotelWithRoomsDto GetHotelById(int hotelId) {
+        HotelWithRoomsDto? hotelData = _context
+            .Hotels
+            .Include(h => h.City)
+            .Include(h => h.Rooms)
+            .Where(h => h.HotelId == hotelId)
+            .AsEnumerable()
+            .Select(h => new HotelWithRoomsDto {
+                HotelId = h.HotelId,
+                Name = h.Name,
+                Address = h.Address,
+                CityId = h.CityId,
+                CityName = h.City.Name,
+                State = h.City.State,
+                Rooms = (h.Rooms ?? new List<Room>()).Select(r => new HotelRoomDto {
+                    RoomId = r.RoomId,
+                    Name = r.Name,
+                    Capacity = r.Capacity,
+                    Image = r.Image,
+                }).ToList()
+            })
+            .SingleOrDefault();
+
+        if (hotelData == null) throw new HotelNotFoundException();
+        return hotelData;
     }
 
     public IEnumerable<HotelDto> GetHotelsByName(string hotelName) {
@@ -42,8 +52,8 @@ public class HotelRepository : IHotelRepository {
                          Name = hotel.Name,
                          Address = hotel.Address,
                          CityId = city.CityId,
-                         cityName = city.Name,
-                         state = city.State,
+                         CityName = city.Name,
+                         State = city.State,
                      };
         return hotels;
     }
@@ -57,8 +67,8 @@ public class HotelRepository : IHotelRepository {
                          Name = hotel.Name,
                          Address = hotel.Address,
                          CityId = city.CityId,
-                         cityName = city.Name,
-                         state = city.State,
+                         CityName = city.Name,
+                         State = city.State,
                      };
         return hotels;
     }
@@ -83,8 +93,8 @@ public class HotelRepository : IHotelRepository {
             Name = hotel.Name,
             Address = hotel.Address,
             CityId = hotel.CityId,
-            cityName = city.Name,
-            state = city.State,
+            CityName = city.Name,
+            State = city.State,
         };
     }
 
@@ -117,8 +127,8 @@ public class HotelRepository : IHotelRepository {
             Name = hotelExists.Name,
             Address = hotelExists.Address,
             CityId = hotelExists.CityId,
-            cityName = hotelCity.Name,
-            state = hotelCity.State,
+            CityName = hotelCity.Name,
+            State = hotelCity.State,
         };
     }
 

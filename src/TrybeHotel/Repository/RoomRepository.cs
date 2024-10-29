@@ -19,8 +19,8 @@ public class RoomRepository : IRoomRepository {
                                       Name = hotel.Name,
                                       Address = hotel.Address,
                                       CityId = city.CityId,
-                                      cityName = city.Name,
-                                      state = city.State,
+                                      CityName = city.Name,
+                                      State = city.State,
                                   }).First();
         return selectedHotel;
     }

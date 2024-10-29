@@ -51,8 +51,8 @@ public class BookingRepository : IBookingRepository {
                 Name = h.Name,
                 Address = h.Address,
                 CityId = h.CityId,
-                cityName = h.City!.Name,
-                state = h.City.State,
+                CityName = h.City!.Name,
+                State = h.City.State,
             })
             .First();
 
@@ -88,8 +88,8 @@ public class BookingRepository : IBookingRepository {
                 Name = h.Name,
                 Address = h.Address,
                 CityId = h.CityId,
-                cityName = h.City!.Name,
-                state = h.City.State,
+                CityName = h.City!.Name,
+                State = h.City.State,
             })
             .First();
 

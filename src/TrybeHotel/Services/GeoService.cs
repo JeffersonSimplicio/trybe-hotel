@@ -62,8 +62,8 @@ public class GeoService : IGeoService {
         var hotelsWithDistance = await Task.WhenAll(listHotels.Select(async hotel => {
             GeoDtoResponse hotelLocal = await GetGeoLocation(new GeoDto() {
                 Address = hotel.Address,
-                City = hotel.cityName,
-                State = hotel.state,
+                City = hotel.CityName,
+                State = hotel.State,
             });
 
             int distance = CalculateDistance(
@@ -72,11 +72,11 @@ public class GeoService : IGeoService {
             );
 
             return new GeoDtoHotelResponse() {
-                HotelId = hotel.HotelId!.Value,
+                HotelId = hotel.HotelId,
                 Name = hotel.Name,
                 Address = hotel.Address,
-                CityName = hotel.cityName,
-                State = hotel.state,
+                CityName = hotel.CityName,
+                State = hotel.State,
                 Distance = distance,
             };
         }));

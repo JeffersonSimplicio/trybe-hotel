@@ -7,3 +7,10 @@ public class RoomDto {
     public string image { get; set; }
     public HotelDto? hotel { get; set; }
 }
+
+public class HotelRoomDto {
+    public int RoomId { get; set; }
+    public string Name { get; set; }
+    public int Capacity { get; set; }
+    public string Image { get; set; }
+}

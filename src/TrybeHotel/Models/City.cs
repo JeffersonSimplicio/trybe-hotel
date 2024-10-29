@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TrybeHotel.Models;
 
-// 1. Adicione o atributo State na model City
 public class City {
     [Key]
     public int CityId { get; set; }
