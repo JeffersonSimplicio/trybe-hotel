@@ -12,11 +12,11 @@ public class GetModel : IGetModel {
     }
 
     public User? UserOrDefault(int userId) {
-        return _context.Users.FirstOrDefault(u => u.UserId == userId);
+        return _context.Users.SingleOrDefault(u => u.UserId == userId);
     }
 
     public User? UserOrDefault(string userEmail) {
-        return _context.Users.FirstOrDefault(u => u.Email == userEmail);
+        return _context.Users.SingleOrDefault(u => u.Email == userEmail);
     }
 
     public User User(int userId) {
@@ -30,7 +30,7 @@ public class GetModel : IGetModel {
     }
 
     public City? CityOrDefault(int cityId) {
-        return _context.Cities.FirstOrDefault(c => c.CityId == cityId);
+        return _context.Cities.SingleOrDefault(c => c.CityId == cityId);
     }
 
     public City City(int cityId) {
@@ -39,7 +39,7 @@ public class GetModel : IGetModel {
     }
 
     public Room? RoomOrDefault(int roomId) {
-        return _context.Rooms.FirstOrDefault(r => r.RoomId == roomId);
+        return _context.Rooms.SingleOrDefault(r => r.RoomId == roomId);
     }
 
     public Room Room(int roomId) {
