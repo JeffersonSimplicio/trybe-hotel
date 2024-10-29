@@ -37,10 +37,10 @@ public class BookingRepository : IBookingRepository {
         _context.SaveChanges();
 
         RoomDto roomDto = new RoomDto() {
-            roomId = room.RoomId,
-            name = room.Name,
-            capacity = room.Capacity,
-            image = room.Image,
+            RoomId = room.RoomId,
+            Name = room.Name,
+            Capacity = room.Capacity,
+            Image = room.Image,
         };
 
         HotelDto hotelDto = _context.Hotels
@@ -56,7 +56,7 @@ public class BookingRepository : IBookingRepository {
             })
             .First();
 
-        roomDto.hotel = hotelDto;
+        roomDto.Hotel = hotelDto;
         BookingResponse bookingDto = SimpleMapper.Map<Booking, BookingResponse>(newBooking);
         bookingDto.Room = roomDto;
 
@@ -74,10 +74,10 @@ public class BookingRepository : IBookingRepository {
         Room room = GetRoomById(booking.RoomId);
 
         RoomDto roomDto = new RoomDto() {
-            roomId = room.RoomId,
-            name = room.Name,
-            capacity = room.Capacity,
-            image = room.Image,
+            RoomId = room.RoomId,
+            Name = room.Name,
+            Capacity = room.Capacity,
+            Image = room.Image,
         };
 
         HotelDto hotelDto = _context.Hotels
@@ -93,7 +93,7 @@ public class BookingRepository : IBookingRepository {
             })
             .First();
 
-        roomDto.hotel = hotelDto;
+        roomDto.Hotel = hotelDto;
         BookingResponse bookingDto = SimpleMapper.Map<Booking, BookingResponse>(booking);
         bookingDto.Room = roomDto;
 

@@ -4,8 +4,7 @@ using TrybeHotel.Dto;
 namespace TrybeHotel.Repository;
 
 public interface IRoomRepository {
-    IEnumerable<RoomDto> GetRooms(int HotelId);
+    RoomDto GetRoomById(int roomId);
     RoomDto AddRoom(RoomInsertDto roomInsert);
-
     void DeleteRoom(int RoomId);
 }

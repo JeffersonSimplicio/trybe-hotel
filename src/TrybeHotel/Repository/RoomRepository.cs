@@ -2,6 +2,7 @@ using TrybeHotel.Models;
 using TrybeHotel.Dto;
 using TrybeHotel.Utils;
 using TrybeHotel.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace TrybeHotel.Repository;
 
@@ -30,19 +31,17 @@ public class RoomRepository : IRoomRepository {
         return selectedHotel;
     }
 
-    public IEnumerable<RoomDto> GetRooms(int HotelId) {
-        HotelDto hotel = GetHotelById(HotelId);
+    public RoomDto GetRoomById(int roomId) {
+        Room? room = _context.Rooms.SingleOrDefault(r => r.RoomId == roomId);
+        if (room == null) throw new RoomNotFoundException();
 
-        var rooms = _context.Rooms
-            .Where(r => r.HotelId == HotelId)
-            .Select(r => new RoomDto {
-                roomId = r.RoomId,
-                name = r.Name,
-                capacity = r.Capacity,
-                image = r.Image,
-                hotel = hotel,
-            });
-        return rooms;
+        return new RoomDto {
+            RoomId = room.RoomId,
+            Name = room.Name,
+            Capacity = room.Capacity,
+            Image = room.Image,
+            Hotel = GetHotelById(room.HotelId),
+        };
     }
 
     public RoomDto AddRoom(RoomInsertDto roomInsert) {
@@ -60,11 +59,11 @@ public class RoomRepository : IRoomRepository {
         _context.SaveChanges();
 
         RoomDto newRoom = new RoomDto {
-            roomId = room.RoomId,
-            name = room.Name,
-            capacity = room.Capacity,
-            image = room.Image,
-            hotel = GetHotelById(room.HotelId),
+            RoomId = room.RoomId,
+            Name = room.Name,
+            Capacity = room.Capacity,
+            Image = room.Image,
+            Hotel = GetHotelById(room.HotelId),
         };
         return newRoom;
     }

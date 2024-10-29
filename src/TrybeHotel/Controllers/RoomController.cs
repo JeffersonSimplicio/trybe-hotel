@@ -17,9 +17,10 @@ public class RoomController : Controller {
         _repository = repository;
     }
 
-    [HttpGet("{HotelId}")]
-    public IActionResult GetRoom(int HotelId) {
-        return Ok(_repository.GetRooms(HotelId));
+    [HttpGet("{roomId}")]
+    public IActionResult GetRoomById(int roomId) {
+        try { return Ok(_repository.GetRoomById(roomId)); }
+        catch (RoomNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
     [HttpPost]
@@ -27,7 +28,8 @@ public class RoomController : Controller {
     [Authorize(Policy = "Admin")]
     public IActionResult PostRoom([FromBody] RoomInsertDto room) {
         try {
-            return Created("", _repository.AddRoom(room));
+            RoomDto newRoom = _repository.AddRoom(room);
+            return CreatedAtAction(nameof(GetRoomById), new { roomId = newRoom.RoomId }, newRoom);
         }
         catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
