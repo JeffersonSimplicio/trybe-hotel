@@ -21,3 +21,7 @@ public class HotelRoomDto {
     public int Capacity { get; set; }
     public string Image { get; set; }
 }
+
+public class RoomInfoDto : HotelRoomDto {
+    public int HotelId { get; set; }
+}

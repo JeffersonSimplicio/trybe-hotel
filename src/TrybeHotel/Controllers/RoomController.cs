@@ -23,10 +23,20 @@ public class RoomController : Controller {
         catch (RoomNotFoundException ex) { return NotFound(new { ex.Message }); }
     }
 
+    [HttpGet]
+    public ActionResult GetAllRooms(int page = 1, int size = 10) {
+        if (page < 1 || size < 1) {
+            return BadRequest(
+                new { messager = "Page and size parameters must be greater than zero." }
+            );
+        }
+        return Ok(_repository.GetAllRooms(page, size));
+    }
+
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public IActionResult PostRoom([FromBody] RoomInsertDto room) {
+    public ActionResult<RoomDto> PostRoom([FromBody] RoomInsertDto room) {
         try {
             RoomDto newRoom = _repository.AddRoom(room);
             return CreatedAtAction(nameof(GetRoomById), new { roomId = newRoom.RoomId }, newRoom);
@@ -37,7 +47,7 @@ public class RoomController : Controller {
     [HttpDelete("{RoomId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public IActionResult Delete(int RoomId) {
+    public ActionResult Delete(int RoomId) {
         _repository.DeleteRoom(RoomId);
         return NoContent();
     }

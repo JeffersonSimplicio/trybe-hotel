@@ -3,6 +3,7 @@ using TrybeHotel.Dto;
 using TrybeHotel.Utils;
 using TrybeHotel.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing;
 
 namespace TrybeHotel.Repository;
 
@@ -44,12 +45,26 @@ public class RoomRepository : IRoomRepository {
         };
     }
 
+    public IEnumerable<RoomInfoDto> GetAllRooms(int page, int size) {
+        int skip = (page - 1) * size;
+
+        return _context.Rooms
+            .Skip(skip)
+            .Take(size)
+            .Select(r => new RoomInfoDto {
+                RoomId = r.RoomId,
+                Name = r.Name,
+                Capacity = r.Capacity,
+                Image = r.Image,
+            });
+    }
+
     public RoomDto AddRoom(RoomInsertDto roomInsert) {
         Hotel? hotel = _context.Hotels.SingleOrDefault(h => h.HotelId == roomInsert.HotelId);
         if (hotel == null) throw new HotelNotFoundException();
 
         Room room = new Room() {
-            HotelId= hotel.HotelId,
+            HotelId = hotel.HotelId,
             Name = roomInsert.Name,
             Capacity = roomInsert.Capacity,
             Image = roomInsert.Image,
