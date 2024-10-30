@@ -33,8 +33,15 @@ public class BookingController : Controller {
             BookingResponse bookindDto = _repository.AddBooking(bookingInsert, userId);
             return Created("", bookindDto);
         }
-        catch (Exception ex) {
+        catch (RoomNotFoundException ex) { return NotFound(new { messager = ex.Message }); }
+        catch (RoomCapacityExceededException ex) {
             return BadRequest(new { messager = ex.Message });
+        }
+        catch (InvalidBookingDateException ex) {
+            return BadRequest(new { messager = ex.Message });
+        }
+        catch (RoomUnavailableException ex) {
+            return Conflict(new { messager = ex.Message });
         }
     }
 
