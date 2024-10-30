@@ -26,12 +26,16 @@ public class BookingController : Controller {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
             var userId = int.Parse(
-                token!.Claims.FirstOrDefault(
+                token!.Claims.SingleOrDefault(
                     c => c.Type == ClaimTypes.NameIdentifier
                 )!.Value
             );
             BookingResponse bookindDto = _repository.AddBooking(bookingInsert, userId);
-            return Created("", bookindDto);
+            return CreatedAtAction(
+                nameof(GetBooking),
+                new { bookingId = bookindDto.BookingId },
+                bookindDto
+            );
         }
         catch (RoomNotFoundException ex) { return NotFound(new { messager = ex.Message }); }
         catch (RoomCapacityExceededException ex) {
@@ -62,5 +66,42 @@ public class BookingController : Controller {
         }
         catch (BookingNotFoundException ex) { return NotFound(new { messager = ex.Message }); }
         catch (UnauthorizedAccessException) { return Forbid(); }
+    }
+
+    [HttpPut("{bookingId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Client")]
+    public ActionResult<BookingResponse> UpdateBooking(
+        int bookingId,
+        [FromBody] BookingDtoInsert bookingInsert
+    ) {
+        try {
+            var token = HttpContext.User.Identity as ClaimsIdentity;
+            var userId = int.Parse(
+                token!.Claims.SingleOrDefault(
+                    c => c.Type == ClaimTypes.NameIdentifier
+                )!.Value
+            );
+            BookingResponse bookindDto = _repository.UpdateBooking(
+                bookingId,
+                bookingInsert,
+                userId
+            );
+            return CreatedAtAction(
+                nameof(GetBooking),
+                new { bookingId = bookindDto.BookingId },
+                bookindDto
+            );
+        }
+        catch (RoomNotFoundException ex) { return NotFound(new { messager = ex.Message }); }
+        catch (RoomCapacityExceededException ex) {
+            return BadRequest(new { messager = ex.Message });
+        }
+        catch (InvalidBookingDateException ex) {
+            return BadRequest(new { messager = ex.Message });
+        }
+        catch (RoomUnavailableException ex) {
+            return Conflict(new { messager = ex.Message });
+        }
     }
 }

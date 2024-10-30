@@ -27,12 +27,7 @@ public class BookingRepository : IBookingRepository {
         if (booking.GuestQuant > room.Capacity) throw new RoomCapacityExceededException();
 
         // Verfica se as datas de check-in e check-out são validas
-        if (
-            booking.CheckIn.Date <= DateTime.Today ||
-            booking.CheckOut.Date <= booking.CheckIn.Date
-        ) {
-            throw new InvalidBookingDateException(booking.CheckIn, booking.CheckOut);
-        }
+        ValidateBookingDates(booking);
 
         // Verifica se o quarto já possui alguma reserva no periodo
         bool isRoomReserved = room.Bookings?.Any(b =>
@@ -96,6 +91,66 @@ public class BookingRepository : IBookingRepository {
         return bookingDto;
     }
 
+    public BookingResponse UpdateBooking(
+        int bookingId,
+        BookingDtoInsert updatedBooking,
+        int userId
+    ) {
+        // Verifica se a reserva existe e obtem os dados da reserva
+        Booking? existingBooking = _context.Bookings
+            .SingleOrDefault(b => b.BookingId == bookingId);
+        if (existingBooking == null) throw new BookingNotFoundException();
+
+        // Verifica se o usuário é o dono da reserva
+        if (existingBooking.UserId != userId) throw new UnauthorizedAccessException();
+
+        //Verifica se o quato existe e obtem os dados do quarto
+        Room? room = _context.Rooms
+            .Include(r => r.Bookings)
+            .SingleOrDefault(r => r.RoomId == updatedBooking.RoomId);
+
+        if (room == null) throw new RoomNotFoundException();
+
+        // Verifica se o quarto tem capacidade suficiente
+        if (updatedBooking.GuestQuant > room.Capacity) throw new RoomCapacityExceededException();
+
+        // Verifica se as datas de check-in e check-out são válidas
+        ValidateBookingDates(updatedBooking);
+
+        // Verifica se o quarto já possui alguma reserva no período (ignorando a reserva atual)
+        bool isRoomReserved = room.Bookings?.Any(b =>
+            b.BookingId != bookingId &&
+            (b.CheckIn < updatedBooking.CheckOut.AddHours(-2)) &&
+            (updatedBooking.CheckIn.AddHours(2) < b.CheckOut)
+        ) ?? false;
+
+        if (isRoomReserved) throw new RoomUnavailableException(room.Name);
+
+        // Atualiza os dados da reserva
+        existingBooking.CheckIn = updatedBooking.CheckIn.Date;
+        existingBooking.CheckOut = updatedBooking.CheckOut.Date;
+        existingBooking.GuestQuant = updatedBooking.GuestQuant;
+        existingBooking.RoomId = room.RoomId;
+
+        _context.SaveChanges();
+
+        // Cria a resposta com os dados atualizados
+        RoomDto roomDto = new RoomDto() {
+            RoomId = room.RoomId,
+            Name = room.Name,
+            Capacity = room.Capacity,
+            Image = room.Image,
+        };
+
+        HotelDto hotelDto = GetHotelDtoById(room.HotelId);
+        roomDto.Hotel = hotelDto;
+
+        BookingResponse bookingResponse = SimpleMapper.Map<Booking, BookingResponse>(existingBooking);
+        bookingResponse.Room = roomDto;
+
+        return bookingResponse;
+    }
+
     private HotelDto GetHotelDtoById(int hotelId) {
         return _context.Hotels
             .Where(h => h.HotelId == hotelId)
@@ -109,5 +164,14 @@ public class BookingRepository : IBookingRepository {
                 State = h.City.State,
             })
             .Single();
+    }
+
+    private static void ValidateBookingDates(BookingDtoInsert booking) {
+        if (
+            booking.CheckIn.Date <= DateTime.Today ||
+            booking.CheckOut.Date <= booking.CheckIn.Date
+        ) {
+            throw new InvalidBookingDateException(booking.CheckIn, booking.CheckOut);
+        }
     }
 }
