@@ -13,7 +13,7 @@ public class TokenGenerator {
     public TokenGenerator() {
         _tokenOptions = new TokenOptions {
             Secret = "4d82a63bbdc67c1e4784ed6587f3730c",
-            ExpiresDay = 1
+            ExpiresDay = 5
         };
     }
 
@@ -36,6 +36,7 @@ public class TokenGenerator {
 
     private ClaimsIdentity AddClaims(UserDto user) {
         var claims = new ClaimsIdentity();
+        claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.UserId!.ToString()));
         claims.AddClaim(new Claim(ClaimTypes.Email, user.Email!));
         claims.AddClaim(new Claim(ClaimTypes.Name, user.Name!));
         claims.AddClaim(new Claim(ClaimTypes.Role, user.UserType!));
