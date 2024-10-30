@@ -6,7 +6,6 @@ namespace TrybeHotel.Repository
     public interface IBookingRepository
     {
         BookingResponse AddBooking(BookingDtoInsert booking, int userId);
-        Room GetRoomById(int RoomId);
-        BookingResponse GetBooking(int bookingId, string email);
+        BookingResponse GetBookingById(int bookingId, int userId, string userType);
     }
 }

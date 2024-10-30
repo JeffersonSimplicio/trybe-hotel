@@ -59,18 +59,7 @@ public class BookingRepository : IBookingRepository {
             Image = room.Image,
         };
 
-        HotelDto hotelDto = _context.Hotels
-            .Where(h => h.HotelId == room.HotelId)
-            .Include(h => h.City)
-            .Select(h => new HotelDto {
-                HotelId = h.HotelId,
-                Name = h.Name,
-                Address = h.Address,
-                CityId = h.CityId,
-                CityName = h.City!.Name,
-                State = h.City.State,
-            })
-            .First();
+        HotelDto hotelDto = GetHotelDtoById(room.HotelId);
 
         roomDto.Hotel = hotelDto;
         BookingResponse bookingDto = SimpleMapper.Map<Booking, BookingResponse>(newBooking);
@@ -79,15 +68,17 @@ public class BookingRepository : IBookingRepository {
         return bookingDto;
     }
 
-    // 10. Refatore o endpoint GET /booking
-    public BookingResponse GetBooking(int bookingId, string email) {
-        User user = _getModel.User(email);
+    public BookingResponse GetBookingById(int bookingId, int userId, string userType) {
         Booking? booking = _context.Bookings.FirstOrDefault(b => b.BookingId == bookingId);
         if (booking == null) throw new BookingNotFoundException();
 
-        if (booking.UserId != user.UserId) throw new UnauthorizedAccessException();
+        User user = _getModel.User(userId);
 
-        Room room = GetRoomById(booking.RoomId);
+        if (userType.ToLower() == "client" && booking.UserId != user.UserId) {
+            throw new UnauthorizedAccessException();
+        }
+
+        Room room = _getModel.Room(booking.RoomId);
 
         RoomDto roomDto = new RoomDto() {
             RoomId = room.RoomId,
@@ -96,8 +87,18 @@ public class BookingRepository : IBookingRepository {
             Image = room.Image,
         };
 
-        HotelDto hotelDto = _context.Hotels
-            .Where(h => h.HotelId == room.HotelId)
+        HotelDto hotelDto = GetHotelDtoById(room.HotelId);
+
+        roomDto.Hotel = hotelDto;
+        BookingResponse bookingDto = SimpleMapper.Map<Booking, BookingResponse>(booking);
+        bookingDto.Room = roomDto;
+
+        return bookingDto;
+    }
+
+    private HotelDto GetHotelDtoById(int hotelId) {
+        return _context.Hotels
+            .Where(h => h.HotelId == hotelId)
             .Include(h => h.City)
             .Select(h => new HotelDto {
                 HotelId = h.HotelId,
@@ -107,17 +108,6 @@ public class BookingRepository : IBookingRepository {
                 CityName = h.City!.Name,
                 State = h.City.State,
             })
-            .First();
-
-        roomDto.Hotel = hotelDto;
-        BookingResponse bookingDto = SimpleMapper.Map<Booking, BookingResponse>(booking);
-        bookingDto.Room = roomDto;
-
-        return bookingDto;
+            .Single();
     }
-
-    public Room GetRoomById(int RoomId) {
-        return _getModel.Room(RoomId);
-    }
-
 }

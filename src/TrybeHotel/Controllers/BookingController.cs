@@ -22,7 +22,7 @@ public class BookingController : Controller {
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Client")]
-    public IActionResult AddBooking([FromBody] BookingDtoInsert bookingInsert) {
+    public ActionResult<BookingResponse> AddBooking([FromBody] BookingDtoInsert bookingInsert) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
             var userId = int.Parse(
@@ -38,16 +38,22 @@ public class BookingController : Controller {
         }
     }
 
-    [HttpGet("{Bookingid}")]
-    public IActionResult GetBooking(int Bookingid) {
+    [HttpGet("{bookingId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public ActionResult<BookingResponse> GetBooking(int bookingId) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
-            var email = token?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            BookingResponse bookindDto = _repository.GetBooking(Bookingid, email);
-            return Ok(bookindDto);
+            int userId = int.Parse(
+                token!.Claims.FirstOrDefault(
+                    c => c.Type == ClaimTypes.NameIdentifier
+                )!.Value
+            );
+            string userType = token!.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Role)!
+                .Value;
+            return Ok(_repository.GetBookingById(bookingId, userId, userType));
         }
-        catch (Exception ex) {
-            return Unauthorized(new { messager = ex.Message });
-        }
+        catch (BookingNotFoundException ex) { return NotFound(new { messager = ex.Message }); }
+        catch (UnauthorizedAccessException) { return Forbid(); }
     }
 }
