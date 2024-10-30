@@ -22,11 +22,15 @@ public class BookingController : Controller {
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Client")]
-    public IActionResult Add([FromBody] BookingDtoInsert bookingInsert) {
+    public IActionResult AddBooking([FromBody] BookingDtoInsert bookingInsert) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
-            var email = token?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            BookingResponse bookindDto = _repository.Add(bookingInsert, email);
+            var userId = int.Parse(
+                token!.Claims.FirstOrDefault(
+                    c => c.Type == ClaimTypes.NameIdentifier
+                )!.Value
+            );
+            BookingResponse bookindDto = _repository.AddBooking(bookingInsert, userId);
             return Created("", bookindDto);
         }
         catch (Exception ex) {

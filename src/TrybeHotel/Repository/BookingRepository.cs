@@ -3,6 +3,7 @@ using TrybeHotel.Dto;
 using TrybeHotel.Exceptions;
 using TrybeHotel.Utils;
 using Microsoft.EntityFrameworkCore;
+using System.Security;
 
 namespace TrybeHotel.Repository;
 
@@ -10,27 +11,42 @@ public class BookingRepository : IBookingRepository {
     protected readonly ITrybeHotelContext _context;
     protected readonly IGetModel _getModel;
 
-    public BookingRepository(
-        ITrybeHotelContext context,
-        IGetModel getModel
-    ) {
+    public BookingRepository(ITrybeHotelContext context, IGetModel getModel) {
         _context = context;
         _getModel = getModel;
     }
 
-    // 9. Refatore o endpoint POST /booking
-    public BookingResponse Add(BookingDtoInsert booking, string email) {
-        Room room = GetRoomById(booking.RoomId);
-        User user = _getModel.User(email);
+    public BookingResponse AddBooking(BookingDtoInsert booking, int userId) {
+        // Verifica se o quarto existe
+        Room? room = _context.Rooms
+            .Include(r => r.Bookings)
+            .SingleOrDefault(r => r.RoomId == booking.RoomId);
+        if (room == null) throw new RoomNotFoundException();
 
+        // Verifica se o quarto tem capacidade suficiente
         if (booking.GuestQuant > room.Capacity) throw new RoomCapacityExceededException();
 
+        // Verfica se as datas de check-in e check-out são validas
+        if (
+            booking.CheckIn.Date <= DateTime.Today ||
+            booking.CheckOut.Date <= booking.CheckIn.Date
+        ) {
+            throw new InvalidBookingDateException(booking.CheckIn, booking.CheckOut);
+        }
+
+        // Verifica se o quarto já possui alguma reserva no periodo
+        bool isRoomReserved = room.Bookings?.Any(b =>
+            (b.CheckIn < booking.CheckOut.AddHours(-2)) &&
+            (booking.CheckIn.AddHours(2) < b.CheckOut)
+        ) ?? false;
+        if (isRoomReserved) throw new RoomUnavailableException(room.Name);
+
         Booking newBooking = new Booking {
-            CheckIn = booking.CheckIn,
-            CheckOut = booking.CheckOut,
+            CheckIn = booking.CheckIn.Date,
+            CheckOut = booking.CheckOut.Date,
             GuestQuant = booking.GuestQuant,
             RoomId = room.RoomId,
-            UserId = user.UserId,
+            UserId = userId,
         };
 
         _context.Bookings.Add(newBooking);
