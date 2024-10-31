@@ -24,7 +24,10 @@ public class RoomController : Controller {
     }
 
     [HttpGet]
-    public ActionResult GetAllRooms(int page = 1, int size = 10) {
+    public ActionResult GetAllRooms(
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10
+    ) {
         if (page < 1 || size < 1) {
             return BadRequest(
                 new { messager = "Page and size parameters must be greater than zero." }
