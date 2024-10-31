@@ -4,6 +4,9 @@ using TrybeHotel.Exceptions;
 using TrybeHotel.Utils;
 using Microsoft.EntityFrameworkCore;
 using System.Security;
+using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TrybeHotel.Repository;
 
@@ -89,6 +92,53 @@ public class BookingRepository : IBookingRepository {
         bookingDto.Room = roomDto;
 
         return bookingDto;
+    }
+
+    public IEnumerable<BookingResponse> GetAllBookings(
+        int pageNumber,
+        int pageSize,
+        DateTime? startDate = null,
+        DateTime? endDate = null
+    ) {
+        if (startDate.HasValue && endDate.HasValue && startDate > endDate) {
+            throw new ArgumentException("A data de início não pode ser posterior à data de fim.");
+        }
+        // Define a consulta inicial para obter as reservas
+        IQueryable<Booking> query = _context.Bookings;
+
+        // Aplica o filtro de data inicial, se fornecido
+        if (startDate.HasValue) {
+            query = query.Where(b => b.CheckIn.Date >= startDate.Value.Date);
+        }
+
+        // Aplica o filtro de data final, se fornecido
+        if (endDate.HasValue) {
+            query = query.Where(b => b.CheckIn.Date <= endDate.Value.Date);
+        }
+
+        // Paginação: salta os registros das páginas anteriores e retorna no máximo n registros
+        query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+        // Executa a consulta e projeta os resultados em BookingResponse
+        var bookings = query.ToList();
+
+        var bookingResponses = bookings.Select(booking => {
+            Room room = _getModel.Room(booking.RoomId);
+            RoomDto roomDto = new RoomDto {
+                RoomId = room.RoomId,
+                Name = room.Name,
+                Capacity = room.Capacity,
+                Image = room.Image,
+                Hotel = GetHotelDtoById(room.HotelId)
+            };
+
+            BookingResponse bookingDto = SimpleMapper.Map<Booking, BookingResponse>(booking);
+            bookingDto.Room = roomDto;
+
+            return bookingDto;
+        });
+
+        return bookingResponses;
     }
 
     public BookingResponse UpdateBooking(

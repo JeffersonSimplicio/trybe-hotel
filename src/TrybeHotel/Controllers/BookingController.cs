@@ -68,6 +68,22 @@ public class BookingController : Controller {
         catch (UnauthorizedAccessException) { return Forbid(); }
     }
 
+    [HttpGet]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Admin")]
+    public ActionResult<BookingResponse> GetAllBookings(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null
+    ) {
+        try {
+            var bookings = _repository.GetAllBookings(pageNumber, pageSize, startDate, endDate);
+            return Ok(bookings);
+        }
+        catch (ArgumentException ex) { return BadRequest(new { messager = ex.Message }); }
+    }
+
     [HttpPut("{bookingId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Client")]
