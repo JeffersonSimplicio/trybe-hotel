@@ -104,4 +104,23 @@ public class BookingController : Controller {
             return Conflict(new { messager = ex.Message });
         }
     }
+
+    [HttpDelete("{bookingId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Client")]
+    public ActionResult<BookingResponse> DeleteBooking(int bookingId) {
+        var token = HttpContext.User.Identity as ClaimsIdentity;
+        var userId = int.Parse(
+            token!.Claims.SingleOrDefault(
+                c => c.Type == ClaimTypes.NameIdentifier
+            )!.Value
+        );
+        try {
+            _repository.DeleteBooking(bookingId, userId);
+            return NoContent();
+        }
+        catch (BookingNotFoundException ex) { return NotFound(new { messager = ex.Message }); }
+        catch (UnauthorizedAccessException) { return Forbid(); }
+        catch (InvalidOperationException ex) { return BadRequest(new { messager = ex.Message }); }
+    }
 }

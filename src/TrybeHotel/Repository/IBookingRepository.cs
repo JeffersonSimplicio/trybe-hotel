@@ -7,4 +7,5 @@ public interface IBookingRepository {
     BookingResponse AddBooking(BookingDtoInsert booking, int userId);
     BookingResponse GetBookingById(int bookingId, int userId, string userType);
     BookingResponse UpdateBooking(int bookingId, BookingDtoInsert updatedBooking, int userId);
+    void DeleteBooking(int bookingId, int userId);
 }

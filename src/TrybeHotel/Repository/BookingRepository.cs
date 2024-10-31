@@ -151,6 +151,33 @@ public class BookingRepository : IBookingRepository {
         return bookingResponse;
     }
 
+    public void DeleteBooking(int bookingId, int userId) {
+        // Verifica se a reserva existe
+        Booking? booking = _context.Bookings.SingleOrDefault(b => b.BookingId == bookingId);
+        if (booking == null) throw new BookingNotFoundException();
+
+        // Verifica se o usuário é o dono da reserva
+        if (booking.UserId != userId) throw new UnauthorizedAccessException();
+
+        DateTime now = DateTime.Now;
+        // Verifica se a reserva já terminou ou está em andamento
+        if (booking.CheckOut <= now) {
+            throw new InvalidOperationException("A reserva não pode ser excluída pois já foi concluída.");
+        }
+        if (booking.CheckIn <= now && booking.CheckOut >= now) {
+            throw new InvalidOperationException("A reserva não pode ser excluída pois está em andamento.");
+        }
+
+        // Verifica se faltam menos de 7 dias para a reserva
+        if ((booking.CheckIn - now).TotalDays < 7) {
+            throw new InvalidOperationException("A reserva só pode ser excluída com 7 dias de antecedência.");
+        }
+
+        // Remove a reserva
+        _context.Bookings.Remove(booking);
+        _context.SaveChanges();
+    }
+
     private HotelDto GetHotelDtoById(int hotelId) {
         return _context.Hotels
             .Where(h => h.HotelId == hotelId)
