@@ -59,6 +59,7 @@ public class RoomRepository : IRoomRepository {
                 Name = r.Name,
                 Capacity = r.Capacity,
                 Image = r.Image,
+                HotelId = r.HotelId,
             });
     }
 
