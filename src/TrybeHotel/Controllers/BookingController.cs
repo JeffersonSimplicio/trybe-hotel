@@ -109,13 +109,13 @@ public class BookingController : Controller {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Client")]
     public ActionResult<BookingResponse> DeleteBooking(int bookingId) {
-        var token = HttpContext.User.Identity as ClaimsIdentity;
-        var userId = int.Parse(
-            token!.Claims.SingleOrDefault(
-                c => c.Type == ClaimTypes.NameIdentifier
-            )!.Value
-        );
         try {
+            var token = HttpContext.User.Identity as ClaimsIdentity;
+            var userId = int.Parse(
+                token!.Claims.SingleOrDefault(
+                    c => c.Type == ClaimTypes.NameIdentifier
+                )!.Value
+            );
             _repository.DeleteBooking(bookingId, userId);
             return NoContent();
         }
