@@ -48,16 +48,16 @@ public class CityRepository : ICityRepository {
         return hotels;
     }
 
-    public CityDto AddCity(CityCreateDto city) {
+    public CityDto AddCity(CityCreateDto newCity) {
         bool CityExists = _context
             .Cities
             .Any(c =>
-                c.Name.ToLower() == city.Name.ToLower() &&
-                c.State.ToLower() == city.State.ToLower()
+                c.Name.ToLower() == newCity.Name.ToLower() &&
+                c.State.ToLower() == newCity.State.ToLower()
             );
-        if (CityExists) throw new CityAlreadyExistsException(city.Name, city.State);
+        if (CityExists) throw new CityAlreadyExistsException(newCity.Name, newCity.State);
 
-        City cityEntity = SimpleMapper.Map<CityCreateDto, City>(city);
+        City cityEntity = SimpleMapper.Map<CityCreateDto, City>(newCity);
 
         _context.Cities.Add(cityEntity);
         _context.SaveChanges();
