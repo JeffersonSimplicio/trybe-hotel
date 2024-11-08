@@ -14,8 +14,8 @@ public class CityRepository : ICityRepository {
         _getModel = getModel;
     }
 
-    public CityDto GetCityById(int id) {
-        City city = _getModel.City(id);
+    public CityDto GetCityById(int cityId) {
+        City city = _getModel.City(cityId);
         return SimpleMapper.Map<City, CityDto>(city);
     }
 
@@ -24,9 +24,9 @@ public class CityRepository : ICityRepository {
         return cities;
     }
 
-    public IEnumerable<CityDto> FindCitiesByName(string name) {
+    public IEnumerable<CityDto> FindCitiesByName(string cityName) {
         var cities = _context.Cities
-            .Where(c => c.Name.ToLower().Contains(name.ToLower()))
+            .Where(c => c.Name.ToLower().Contains(cityName.ToLower()))
             .Select(c => SimpleMapper.Map<City, CityDto>(c));
         return cities;
     }
@@ -48,41 +48,41 @@ public class CityRepository : ICityRepository {
         return hotels;
     }
 
-    public CityDto AddCity(CityDtoInsert city) {
+    public CityDto AddCity(CityCreateDto newCity) {
         bool CityExists = _context
             .Cities
             .Any(c =>
-                c.Name.ToLower() == city.Name.ToLower() &&
-                c.State.ToLower() == city.State.ToLower()
+                c.Name.ToLower() == newCity.Name.ToLower() &&
+                c.State.ToLower() == newCity.State.ToLower()
             );
-        if (CityExists) throw new CityAlreadyExistsException(city.Name, city.State);
+        if (CityExists) throw new CityAlreadyExistsException(newCity.Name, newCity.State);
 
-        City cityEntity = SimpleMapper.Map<CityDtoInsert, City>(city);
+        City cityEntity = SimpleMapper.Map<CityCreateDto, City>(newCity);
 
         _context.Cities.Add(cityEntity);
         _context.SaveChanges();
         return SimpleMapper.Map<City, CityDto>(cityEntity);
     }
 
-    public CityDto UpdateCity(int cityId, CityDtoInsert city) {
+    public CityDto UpdateCity(int cityId, CityUpdateDto updateCity) {
         City existingCity = _getModel.City(cityId);
 
         bool duplicateCityExists = _context.Cities.Any(
-            c => c.Name.ToLower() == city.Name.ToLower() &&
-            c.State.ToLower() == city.State.ToLower() &&
+            c => c.Name.ToLower() == updateCity.Name.ToLower() &&
+            c.State.ToLower() == updateCity.State.ToLower() &&
             c.CityId != cityId
         );
-        if (duplicateCityExists) throw new CityAlreadyExistsException(city.Name, city.State);
+        if (duplicateCityExists) throw new CityAlreadyExistsException(updateCity.Name, updateCity.State);
 
-        existingCity.Name = city.Name;
-        existingCity.State = city.State;
+        existingCity.Name = updateCity.Name;
+        existingCity.State = updateCity.State;
 
         _context.SaveChanges();
         return SimpleMapper.Map<City, CityDto>(existingCity);
     }
 
-    public void DeleteCity(int id) {
-        City city = _getModel.City(id);
+    public void DeleteCity(int cityId) {
+        City city = _getModel.City(cityId);
         _context.Cities.Remove(city);
         _context.SaveChanges();
     }

@@ -5,14 +5,19 @@ using System.Drawing.Printing;
 namespace TrybeHotel.Repository;
 
 public interface IBookingRepository {
-    BookingResponse AddBooking(BookingDtoInsert booking, int userId);
-    BookingResponse GetBookingById(int bookingId, int userId, string userType);
-    IEnumerable<BookingResponse> GetAllBookings(
+    BookingDto GetBookingById(int bookingId, int userId, string userType);
+    IEnumerable<BookingDto> GetAllBookings(
         int pageNumber,
         int pageSize,
         DateTime? startDate = null,
         DateTime? endDate = null
     );
-    BookingResponse UpdateBooking(int bookingId, BookingDtoInsert updatedBooking, int userId);
+    //Implementar FindBookingByUser
+    BookingDto AddBooking(BookingCreateDto newBooking, int userId);
+    BookingDto UpdateBooking(
+        int bookingId,
+        BookingUpdateDto updatedBooking,
+        int userId
+    );
     void DeleteBooking(int bookingId, int userId);
 }

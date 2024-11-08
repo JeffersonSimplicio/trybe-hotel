@@ -3,10 +3,6 @@ using TrybeHotel.Dto;
 using TrybeHotel.Exceptions;
 using TrybeHotel.Utils;
 using Microsoft.EntityFrameworkCore;
-using System.Security;
-using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TrybeHotel.Repository;
 
@@ -19,54 +15,41 @@ public class BookingRepository : IBookingRepository {
         _getModel = getModel;
     }
 
-    public BookingResponse AddBooking(BookingDtoInsert booking, int userId) {
+    public BookingDto AddBooking(BookingCreateDto newBooking, int userId) {
         // Verifica se o quarto existe
         Room? room = _context.Rooms
             .Include(r => r.Bookings)
-            .SingleOrDefault(r => r.RoomId == booking.RoomId);
+            .SingleOrDefault(r => r.RoomId == newBooking.RoomId);
         if (room == null) throw new RoomNotFoundException();
 
         // Verifica se o quarto tem capacidade suficiente
-        if (booking.GuestQuant > room.Capacity) throw new RoomCapacityExceededException();
+        if (newBooking.GuestQuant > room.Capacity) throw new RoomCapacityExceededException();
 
         // Verfica se as datas de check-in e check-out são validas
-        ValidateBookingDates(booking);
+        ValidateBookingDates(newBooking);
 
         // Verifica se o quarto já possui alguma reserva no periodo
         bool isRoomReserved = room.Bookings?.Any(b =>
-            (b.CheckIn < booking.CheckOut.AddHours(-2)) &&
-            (booking.CheckIn.AddHours(2) < b.CheckOut)
+            (b.CheckIn < newBooking.CheckOut.AddHours(-2)) &&
+            (newBooking.CheckIn.AddHours(2) < b.CheckOut)
         ) ?? false;
         if (isRoomReserved) throw new RoomUnavailableException(room.Name);
 
-        Booking newBooking = new Booking {
-            CheckIn = booking.CheckIn.Date,
-            CheckOut = booking.CheckOut.Date,
-            GuestQuant = booking.GuestQuant,
+        Booking createdBooking = new Booking {
+            CheckIn = newBooking.CheckIn.Date,
+            CheckOut = newBooking.CheckOut.Date,
+            GuestQuant = newBooking.GuestQuant,
             RoomId = room.RoomId,
             UserId = userId,
         };
 
-        _context.Bookings.Add(newBooking);
+        _context.Bookings.Add(createdBooking);
         _context.SaveChanges();
 
-        RoomDto roomDto = new RoomDto() {
-            RoomId = room.RoomId,
-            Name = room.Name,
-            Capacity = room.Capacity,
-            Image = room.Image,
-        };
-
-        HotelDto hotelDto = GetHotelDtoById(room.HotelId);
-
-        roomDto.Hotel = hotelDto;
-        BookingResponse bookingDto = SimpleMapper.Map<Booking, BookingResponse>(newBooking);
-        bookingDto.Room = roomDto;
-
-        return bookingDto;
+        return SimpleMapper.Map<Booking, BookingDto>(createdBooking); ;
     }
 
-    public BookingResponse GetBookingById(int bookingId, int userId, string userType) {
+    public BookingDto GetBookingById(int bookingId, int userId, string userType) {
         Booking? booking = _context.Bookings.FirstOrDefault(b => b.BookingId == bookingId);
         if (booking == null) throw new BookingNotFoundException();
 
@@ -76,25 +59,10 @@ public class BookingRepository : IBookingRepository {
             throw new UnauthorizedAccessException();
         }
 
-        Room room = _getModel.Room(booking.RoomId);
-
-        RoomDto roomDto = new RoomDto() {
-            RoomId = room.RoomId,
-            Name = room.Name,
-            Capacity = room.Capacity,
-            Image = room.Image,
-        };
-
-        HotelDto hotelDto = GetHotelDtoById(room.HotelId);
-
-        roomDto.Hotel = hotelDto;
-        BookingResponse bookingDto = SimpleMapper.Map<Booking, BookingResponse>(booking);
-        bookingDto.Room = roomDto;
-
-        return bookingDto;
+        return SimpleMapper.Map<Booking, BookingDto>(booking);
     }
 
-    public IEnumerable<BookingResponse> GetAllBookings(
+    public IEnumerable<BookingDto> GetAllBookings(
         int pageNumber,
         int pageSize,
         DateTime? startDate = null,
@@ -141,9 +109,9 @@ public class BookingRepository : IBookingRepository {
         return bookingResponses;
     }
 
-    public BookingResponse UpdateBooking(
+    public BookingDto UpdateBooking(
         int bookingId,
-        BookingDtoInsert updatedBooking,
+        BookingUpdateDto updatedBooking,
         int userId
     ) {
         // Verifica se a reserva existe e obtem os dados da reserva
@@ -243,7 +211,7 @@ public class BookingRepository : IBookingRepository {
             .Single();
     }
 
-    private static void ValidateBookingDates(BookingDtoInsert booking) {
+    private static void ValidateBookingDates(BookingBaseDto booking) {
         if (
             booking.CheckIn.Date <= DateTime.Today ||
             booking.CheckOut.Date <= booking.CheckIn.Date

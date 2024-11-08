@@ -4,12 +4,11 @@ using TrybeHotel.Dto;
 namespace TrybeHotel.Repository;
 
 public interface ICityRepository {
-    CityDto GetCityById(int id);
+    CityDto GetCityById(int cityId);
     IEnumerable<CityDto> GetAllCities();
-    IEnumerable<CityDto> FindCitiesByName(string name);
+    IEnumerable<CityDto> FindCitiesByName(string cityName);
     IEnumerable<HotelDto> FindHotelsByCity(int cityId);
-    CityDto AddCity(CityDtoInsert city);
-    //Talvez depois deva cria uma DTO para update
-    CityDto UpdateCity(int cityId, CityDtoInsert city);
-    void DeleteCity(int id);
+    CityDto AddCity(CityCreateDto newCity);
+    CityDto UpdateCity(int cityId, CityUpdateDto updateCity);
+    void DeleteCity(int cityId);
 }

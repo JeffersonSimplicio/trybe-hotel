@@ -33,7 +33,7 @@ public class UserController : Controller {
     }
 
     [HttpPost]
-    public ActionResult<UserDto> AddUser([FromBody] UserDtoInsert user) {
+    public ActionResult<UserDto> AddUser([FromBody] UserCreateDto user) {
         try {
             return Created("", _repository.AddUser(user));
         }
@@ -44,7 +44,10 @@ public class UserController : Controller {
 
     [HttpPut("{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public ActionResult<UserDto> UpdateUser(int userId, [FromBody] UserDtoUpdate userUpdate) {
+    public ActionResult<UserDto> UpdateUser(
+        int userId,
+        [FromBody] UserUpdateDto userUpdate
+    ) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
             string userType = token!.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)!.Value;
