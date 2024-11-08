@@ -19,17 +19,15 @@ public class RoomRepository : IRoomRepository {
 
     private HotelDto GetHotelDtoById(int HotelId) {
         HotelDto? selectedHotel = (from hotel in _context.Hotels
-                                  join city in _context.Cities
-                                  on hotel.CityId equals city.CityId
-                                  where hotel.HotelId == HotelId
-                                  select new HotelDto {
-                                      HotelId = hotel.HotelId,
-                                      Name = hotel.Name,
-                                      Address = hotel.Address,
-                                      CityId = city.CityId,
-                                      CityName = city.Name,
-                                      State = city.State,
-                                  }).SingleOrDefault();
+                                   join city in _context.Cities
+                                   on hotel.CityId equals city.CityId
+                                   where hotel.HotelId == HotelId
+                                   select new HotelDto {
+                                       HotelId = hotel.HotelId,
+                                       Name = hotel.Name,
+                                       Address = hotel.Address,
+                                       CityId = city.CityId,
+                                   }).SingleOrDefault();
 
         if (selectedHotel == null) throw new HotelNotFoundException();
 
@@ -44,11 +42,11 @@ public class RoomRepository : IRoomRepository {
             Name = room.Name,
             Capacity = room.Capacity,
             Image = room.Image,
-            Hotel = GetHotelDtoById(room.HotelId),
+            HotelId = room.HotelId,
         };
     }
 
-    public IEnumerable<RoomInfoDto> GetAllRooms(int page, int size) {
+    public IEnumerable<RoomDto> GetAllRooms(int page, int size) {
         int skip = (page - 1) * size;
 
         return _context.Rooms
@@ -63,15 +61,15 @@ public class RoomRepository : IRoomRepository {
             });
     }
 
-    public RoomDto AddRoom(RoomInsertDto roomInsert) {
-        Hotel? hotel = _context.Hotels.SingleOrDefault(h => h.HotelId == roomInsert.HotelId);
+    public RoomDto AddRoom(RoomCreateDto newRoom) {
+        Hotel? hotel = _context.Hotels.SingleOrDefault(h => h.HotelId == newRoom.HotelId);
         if (hotel == null) throw new HotelNotFoundException();
 
         Room room = new Room() {
             HotelId = hotel.HotelId,
-            Name = roomInsert.Name,
-            Capacity = roomInsert.Capacity,
-            Image = roomInsert.Image,
+            Name = newRoom.Name,
+            Capacity = newRoom.Capacity,
+            Image = newRoom.Image,
         };
 
         _context.Rooms.Add(room);
@@ -82,31 +80,31 @@ public class RoomRepository : IRoomRepository {
             Name = room.Name,
             Capacity = room.Capacity,
             Image = room.Image,
-            Hotel = GetHotelDtoById(room.HotelId),
+            HotelId = room.HotelId,
         };
         return newRoom;
     }
 
-    public RoomDto UpdateRoom(int roomId, RoomInsertDto roomInsert) {
+    public RoomDto UpdateRoom(int roomId, RoomUpdateDto updateRoom) {
         // VerificationException se o quarto existe
         Room room = _getModel.Room(roomId);
 
         // Verifica se o hotel existe
-        HotelDto hotel = GetHotelDtoById(roomInsert.HotelId);
+        GetHotelDtoById(updateRoom.HotelId);
 
-        room.HotelId = roomInsert.HotelId;
-        room.Name = roomInsert.Name;
-        room.Capacity = roomInsert.Capacity;
-        room.Image = roomInsert.Image;
+        room.HotelId = updateRoom.HotelId;
+        room.Name = updateRoom.Name;
+        room.Capacity = updateRoom.Capacity;
+        room.Image = updateRoom.Image;
 
         _context.SaveChanges();
 
         return new RoomDto {
-            RoomId=room.RoomId,
-            Name = roomInsert.Name,
-            Capacity=roomInsert.Capacity,
-            Image = roomInsert.Image,
-            Hotel = hotel,
+            RoomId = room.RoomId,
+            Name = updateRoom.Name,
+            Capacity = updateRoom.Capacity,
+            Image = updateRoom.Image,
+            HotelId = room.HotelId,
         };
     }
 
