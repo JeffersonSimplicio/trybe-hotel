@@ -52,7 +52,10 @@ public class CityController : Controller {
     [HttpPut("{cityId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<CityDto> UpdateCity(int cityId, [FromBody] CityUpdateDto city) {
+    public ActionResult<CityDto> UpdateCity(
+        int cityId,
+        [FromBody] CityUpdateDto city
+    ) {
         try { return Ok(_repository.UpdateCity(cityId, city)); }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }
         catch (CityAlreadyExistsException ex) { return Conflict(new { ex.Message }); }
