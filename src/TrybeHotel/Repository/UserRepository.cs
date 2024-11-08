@@ -23,7 +23,7 @@ public class UserRepository : IUserRepository {
         return SimpleMapper.Map<User, UserDto>(user);
     }
 
-    public UserDto AddUser(UserDtoInsert user) {
+    public UserDto AddUser(UserCreateDto user) {
         try {
             GetUserByEmail(user.Email);
             //Exception thrown if the email is already registered.
@@ -62,7 +62,7 @@ public class UserRepository : IUserRepository {
         return _context.Users.Select(u => SimpleMapper.Map<User, UserDto>(u));
     }
 
-    public UserDto UpdateUser(int userId, UserDtoUpdate userUpdate, string userType) {
+    public UserDto UpdateUser(int userId, UserUpdateDto userUpdate, string userType) {
         User user = _getModel.User(userId);
 
         bool duplicateUserExists = _context.Users.Any(
