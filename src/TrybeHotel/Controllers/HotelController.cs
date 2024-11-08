@@ -19,7 +19,7 @@ public class HotelController : Controller {
 
     [HttpGet("search/{nameFragment}")]
     public ActionResult<IEnumerable<HotelDto>> GetHotelsByName(string nameFragment) {
-        return Ok(_repository.GetHotelsByName(nameFragment));
+        return Ok(_repository.FindHotelsByName(nameFragment));
     }
 
     [HttpGet]
@@ -36,7 +36,7 @@ public class HotelController : Controller {
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<HotelDto> AddHotel([FromBody] HotelInsertDto hotel) {
+    public ActionResult<HotelDto> AddHotel([FromBody] HotelCreateDto hotel) {
         try {
             HotelDto newHotel = _repository.AddHotel(hotel);
             return CreatedAtAction(
@@ -52,7 +52,10 @@ public class HotelController : Controller {
     [HttpPut("{hotelId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<HotelDto> UpdateHotel(int hotelId, [FromBody] HotelInsertDto hotel) {
+    public ActionResult<HotelDto> UpdateHotel(
+        int hotelId,
+        [FromBody] HotelUpdateDto hotel
+    ) {
         try { return Ok(_repository.UpdateHotel(hotelId, hotel)); }
         catch (HotelNotFoundException ex) { return NotFound(new { ex.Message }); }
         catch (CityNotFoundException ex) { return NotFound(new { ex.Message }); }

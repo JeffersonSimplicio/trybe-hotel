@@ -3,9 +3,10 @@ using TrybeHotel.Dto;
 namespace TrybeHotel.Repository;
 
 public interface IHotelRepository {
-    HotelWithRoomsDto GetHotelById(int hotelId);
+    HotelDto GetHotelById(int hotelId);
     IEnumerable<HotelDto> GetAllHotels();
-    IEnumerable<HotelDto> GetHotelsByName(string hotelName);
+    IEnumerable<HotelDto> FindHotelsByName(string hotelName);
+    //Implmentar futuramente: FindRoomsByHotel
     HotelDto AddHotel(HotelCreateDto newHotel);
     HotelDto UpdateHotel(int hotelId, HotelUpdateDto updateHotel);
     void DeleteHotel(int hotelId);

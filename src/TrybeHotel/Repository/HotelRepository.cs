@@ -15,35 +15,22 @@ public class HotelRepository : IHotelRepository {
         _getModel = getModel;
     }
 
-    public HotelWithRoomsDto GetHotelById(int hotelId) {
-        HotelWithRoomsDto? hotelData = _context
+    public HotelDto GetHotelById(int hotelId) {
+        HotelDto? hotelData = _context
             .Hotels
-            .Include(h => h.City)
-            .Include(h => h.Rooms)
             .Where(h => h.HotelId == hotelId)
-            .AsEnumerable()
-            .Select(h => new HotelWithRoomsDto {
+            .Select(h => new HotelDto {
                 HotelId = h.HotelId,
                 Name = h.Name,
                 Address = h.Address,
-                City = new CityDto {
-                    CityId = h.CityId,
-                    Name = h.City.Name,
-                    State = h.City.State,
-                },
-                Rooms = (h.Rooms ?? new List<Room>()).Select(r => new RoomDto {
-                    RoomId = r.RoomId,
-                    Name = r.Name,
-                    Capacity = r.Capacity,
-                    Image = r.Image,
-                }).ToList()
+                CityId = h.CityId,
             }).SingleOrDefault();
 
         if (hotelData == null) throw new HotelNotFoundException();
         return hotelData;
     }
 
-    public IEnumerable<HotelDto> GetHotelsByName(string hotelName) {
+    public IEnumerable<HotelDto> FindHotelsByName(string hotelName) {
         var hotels = from hotel in _context.Hotels
                      where hotel.Name.ToLower().Contains(hotelName.ToLower())
                      select new HotelDto {
