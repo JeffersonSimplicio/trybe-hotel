@@ -22,7 +22,9 @@ public class BookingController : Controller {
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Client")]
-    public ActionResult<BookingResponse> AddBooking([FromBody] BookingDtoInsert bookingInsert) {
+    public ActionResult<BookingDto> AddBooking(
+        [FromBody] BookingCreateDto bookingInsert
+    ) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
             var userId = int.Parse(
@@ -51,7 +53,7 @@ public class BookingController : Controller {
 
     [HttpGet("{bookingId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public ActionResult<BookingResponse> GetBooking(int bookingId) {
+    public ActionResult<BookingDto> GetBooking(int bookingId) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
             int userId = int.Parse(
@@ -71,7 +73,7 @@ public class BookingController : Controller {
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Admin")]
-    public ActionResult<BookingResponse> GetAllBookings(
+    public ActionResult<IEnumerable<BookingDto>> GetAllBookings(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] DateTime? startDate = null,
@@ -87,9 +89,9 @@ public class BookingController : Controller {
     [HttpPut("{bookingId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Client")]
-    public ActionResult<BookingResponse> UpdateBooking(
+    public ActionResult<BookingDto> UpdateBooking(
         int bookingId,
-        [FromBody] BookingDtoInsert bookingInsert
+        [FromBody] BookingUpdateDto bookingInsert
     ) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
@@ -124,7 +126,7 @@ public class BookingController : Controller {
     [HttpDelete("{bookingId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Authorize(Policy = "Client")]
-    public ActionResult<BookingResponse> DeleteBooking(int bookingId) {
+    public ActionResult DeleteBooking(int bookingId) {
         try {
             var token = HttpContext.User.Identity as ClaimsIdentity;
             var userId = int.Parse(
